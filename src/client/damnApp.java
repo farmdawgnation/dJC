@@ -66,6 +66,22 @@ public class damnApp implements ActionListener {
         if(e.getSource() == serverCommandField) {
             String parts[] = serverCommandField.getText().split(" ");
             if(parts[0].equalsIgnoreCase("/connect")) {
+                terminalEcho(0, "Fetching authtoken, please wait...");
+                TokenFetcher tf = new TokenFetcher("www.deviantart.com");
+                String authtoken = tf.doTokenFetch(parts[1], parts[2]);
+                if(authtoken == null) {
+                    terminalEcho(0, "Error fetching authtoken.");
+                    terminalEcho(0, "If you know what yours is use /tokenconnect to connect to dAmn.");
+                    serverCommandField.setText("");
+                    return;
+                }
+                serverTerminal.append("*** Connecting to chat.deviantart.com:3900\n");
+                protocol.setUserInfo(parts[1], authtoken);
+                commRunnable = new damnComm(protocol, "chat.deviantart.com", 3900);
+                socketThread = new Thread(commRunnable);
+                socketThread.start();
+                connected = 1;
+            } else if(parts[0].equalsIgnoreCase("/tokenconnect")) {
                 serverTerminal.append("*** Connecting to chat.deviantart.com:3900\n");
                 protocol.setUserInfo(parts[1], parts[2]);
                 commRunnable = new damnComm(protocol, "chat.deviantart.com", 3900);
@@ -103,6 +119,10 @@ public class damnApp implements ActionListener {
                 terminalEcho(0, "If you are interested in getting involved: Let me know.");
                 terminalEcho(0, "Now back to your regularly scheduled programming...");
                 terminalEcho(0, "");
+            } else if(parts[0].equalsIgnoreCase("/token")) {
+                TokenFetcher tf = new TokenFetcher("www.deviantart.com");
+                
+                terminalEcho(0, tf.doTokenFetch(parts[1], parts[2]));
             }
             serverCommandField.setText("");
         }

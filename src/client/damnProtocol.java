@@ -101,75 +101,83 @@ public class damnProtocol {
         String[] tmpBox;
         tmpBox = splitPacket(data);
         
-        if(tmpBox[0].equalsIgnoreCase("ping")) {
-            dC.writeData(buildPacket(1, "pong"));
-        } else if(tmpBox[0].startsWith("login ")) {
-            String[] event = tmpBox[1].split("=");
-            if(event[1].equalsIgnoreCase("ok")) {
-                dJ.terminalEcho(0, "Login Successful");
-            } else {
-                dJ.terminalEcho(0, "Login Unsuccessful, please close connection and try again.");
-            }
-        } else if(tmpBox[0].startsWith("recv chat:")) {
-            if(tmpBox[2].equalsIgnoreCase("msg main")) {
-                tmpBox[5] = processTablumps(tmpBox[5]);
-                String[] fromtxt = tmpBox[3].split("=");
-                String[] infotext = tmpBox[0].split(":");
-                dJ.echoChat(infotext[1], fromtxt[1], tmpBox[5]);
-            } else if(tmpBox[2].equalsIgnoreCase("action main")) {
-                tmpBox[5] = processTablumps(tmpBox[5]);
-                String[] fromtext = tmpBox[3].split("=");
-                String[] infotext = tmpBox[0].split(":");
-                dJ.echoChat(infotext[1], "*** " + fromtext[1] + " " + tmpBox[5]);
-            } else if(tmpBox[2].startsWith("join ")) {
-                String[] whoisit = tmpBox[2].split(" ");
-                String[] infotext= tmpBox[0].split(":");
-                dJ.echoChat(infotext[1], "*** " + whoisit[1] + " has joined.");
-                dJ.getChatMemberList(infotext[1]).addElement(whoisit[1]);
-            } else if(tmpBox[2].startsWith("part ")) {
-                String[] whoisit = tmpBox[2].split(" ");
-                String[] infotext= tmpBox[0].split(":");
-                dJ.echoChat(infotext[1], "*** " + whoisit[1] + " has left.");
-                dJ.getChatMemberList(infotext[1]).remove(dJ.searchList(infotext[1], whoisit[1]));
-            }
-        } else if(tmpBox[0].startsWith("join chat:")) {
-            String linea[] = tmpBox[0].split(":");
-            String lineb[] = tmpBox[1].split("=");
-            
-            if(lineb[1].equalsIgnoreCase("ok")) {
-                dJ.createChat(linea[1]);
-                dJ.terminalEcho(0, "Successfully joined #" + linea[1]);
-            } else if(lineb[1].equalsIgnoreCase("chatroom doesn't exist")) {
-                dJ.terminalEcho(0, "Chat room #" + linea[1] + " does not exist.");
-            }
-        } else if(tmpBox[0].startsWith("part chat:")) {
-            String linea[] = tmpBox[0].split(":");
-            String lineb[] = tmpBox[1].split("=");
-            
-            if(lineb[1].equalsIgnoreCase("ok")) {
-                dJ.deleteChat(linea[1]);
-                dJ.terminalEcho(0, "Successfully parted #" + linea[1]);
-            } else {
-                dJ.terminalEcho(0, "Unreconized Error: " + lineb[1]);
-            }
-        } else if(tmpBox[0].startsWith("property chat:")) {
-            String linea[] = tmpBox[0].split(":");
-            String lineb[] = tmpBox[1].split("=");
-            
-            if(lineb[1].equalsIgnoreCase("members")) {
-                String[] propertysplit = data.split("\n\n");
-                for(int i=1; i<propertysplit.length; i++) {
-                    String[] dataSplit = propertysplit[i].split("\n");
-                    String[] linec = dataSplit[0].split(" ");
-                    dJ.getChatMemberList(linea[1]).addElement(linec[1]);
+        try {
+            if(tmpBox[0].equalsIgnoreCase("ping")) {
+                dC.writeData(buildPacket(1, "pong"));
+            } else if(tmpBox[0].startsWith("login ")) {
+                String[] event = tmpBox[1].split("=");
+                if(event[1].equalsIgnoreCase("ok")) {
+                    dJ.terminalEcho(0, "Login Successful");
+                } else {
+                    dJ.terminalEcho(0, "Login Unsuccessful, please close connection and try again.");
                 }
-            } else if(lineb[1].equalsIgnoreCase("topic")) {
-                tmpBox[5] = processTablumps(tmpBox[5]);
-                dJ.echoChat(linea[1], "*** Topic for #" + linea[1] + ": " + tmpBox[5]);
-            } else if(lineb[1].equalsIgnoreCase("title")) {
-                tmpBox[5] = processTablumps(tmpBox[5]);
-                dJ.echoChat(linea[1], "*** Title for #" + linea[1] + ": " + tmpBox[5]);
+            } else if(tmpBox[0].startsWith("recv chat:")) {
+                if(tmpBox[2].equalsIgnoreCase("msg main")) {
+                    tmpBox[5] = processTablumps(tmpBox[5]);
+                    String[] fromtxt = tmpBox[3].split("=");
+                    String[] infotext = tmpBox[0].split(":");
+                    dJ.echoChat(infotext[1], fromtxt[1], tmpBox[5]);
+                } else if(tmpBox[2].equalsIgnoreCase("action main")) {
+                    tmpBox[5] = processTablumps(tmpBox[5]);
+                    String[] fromtext = tmpBox[3].split("=");
+                    String[] infotext = tmpBox[0].split(":");
+                    dJ.echoChat(infotext[1], "*** " + fromtext[1] + " " + tmpBox[5]);
+                } else if(tmpBox[2].startsWith("join ")) {
+                    String[] whoisit = tmpBox[2].split(" ");
+                    String[] infotext= tmpBox[0].split(":");
+                    dJ.echoChat(infotext[1], "*** " + whoisit[1] + " has joined.");
+                    dJ.getChatMemberList(infotext[1]).addElement(whoisit[1]);
+                } else if(tmpBox[2].startsWith("part ")) {
+                    String[] whoisit = tmpBox[2].split(" ");
+                    String[] infotext= tmpBox[0].split(":");
+                    dJ.echoChat(infotext[1], "*** " + whoisit[1] + " has left.");
+                    dJ.getChatMemberList(infotext[1]).remove(dJ.searchList(infotext[1], whoisit[1]));
+                }
+            } else if(tmpBox[0].startsWith("join chat:")) {
+                String linea[] = tmpBox[0].split(":");
+                String lineb[] = tmpBox[1].split("=");
+
+                if(lineb[1].equalsIgnoreCase("ok")) {
+                    dJ.createChat(linea[1]);
+                    dJ.terminalEcho(0, "Successfully joined #" + linea[1]);
+                } else if(lineb[1].equalsIgnoreCase("chatroom doesn't exist")) {
+                    dJ.terminalEcho(0, "Chat room #" + linea[1] + " does not exist.");
+                }
+            } else if(tmpBox[0].startsWith("part chat:")) {
+                String linea[] = tmpBox[0].split(":");
+                String lineb[] = tmpBox[1].split("=");
+
+                if(lineb[1].equalsIgnoreCase("ok")) {
+                    dJ.deleteChat(linea[1]);
+                    dJ.terminalEcho(0, "Successfully parted #" + linea[1]);
+                } else {
+                    dJ.terminalEcho(0, "Unreconized Error: " + lineb[1]);
+                }
+            } else if(tmpBox[0].startsWith("property chat:")) {
+                String linea[] = tmpBox[0].split(":");
+                String lineb[] = tmpBox[1].split("=");
+
+                if(lineb[1].equalsIgnoreCase("members")) {
+                    String[] propertysplit = data.split("\n\n");
+                    for(int i=1; i<propertysplit.length; i++) {
+                        String[] dataSplit = propertysplit[i].split("\n");
+                        String[] linec = dataSplit[0].split(" ");
+                        dJ.getChatMemberList(linea[1]).addElement(linec[1]);
+                    }
+                } else if(lineb[1].equalsIgnoreCase("topic")) {
+                    if(tmpBox.length >= 5) {
+                        tmpBox[5] = processTablumps(tmpBox[5]);
+                        dJ.echoChat(linea[1], "*** Topic for #" + linea[1] + ": " + tmpBox[5]);
+                    }
+                } else if(lineb[1].equalsIgnoreCase("title")) {
+                    if(tmpBox.length >= 5) {
+                        tmpBox[5] = processTablumps(tmpBox[5]);
+                        dJ.echoChat(linea[1], "*** Title for #" + linea[1] + ": " + tmpBox[5]);
+                    }
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
@@ -178,7 +186,7 @@ public class damnProtocol {
      */
     public void doHandshake() {
         //Initial Handshake
-        dC.writeData(buildPacket(1, "dAmnClient 0.2", "agent=dJ"));
+        dC.writeData(buildPacket(1, "dAmnClient 0.2", "agent=dJC-0.2"));
         dJ.terminalEcho(1, "dAmnClient 0.2....");
         dC.writeData(buildPacket(1, "login " + username, "pk=" + password));
         dJ.terminalEcho(1, "login...");
@@ -223,14 +231,26 @@ public class damnProtocol {
      */
     private String processTablumps(String rawdata) {
         //Emoticons
-        Pattern thePattern = Pattern.compile("&emote\t([0-9A-Za-z:]+)\t([0-9]+)\t([0-9]+)\t([0-9A-Za-z:!() ]+)\t([0-9a-z/=.]+)\t");
-        Matcher theMatcher = thePattern.matcher(rawdata);
-        rawdata = theMatcher.replaceAll("<img src=\"http://e.deviantart.com/emoticons/$5\" alt=\"$4\">");
+        Pattern thePattern;
+        Matcher theMatcher;
+        
+        if(rawdata.contains("&emote\t")) {
+            thePattern = Pattern.compile("&emote\t([0-9A-Za-z:()\\|]+)\t([0-9]+)\t([0-9]+)\t([0-9A-Za-z:!() \\|]+)\t([0-9a-z/=.]+)\t");
+            theMatcher = thePattern.matcher(rawdata);
+            rawdata = theMatcher.replaceAll("<img src=\"http://e.deviantart.com/emoticons/$5\" alt=\"$4\">");
+        }
         
         //Formatting
         thePattern = Pattern.compile("&([a-zA-Z])\t([a-zA-Z0-9]+)&/([a-zA-Z])\t");
         theMatcher = thePattern.matcher(rawdata);
         rawdata = theMatcher.replaceAll("<$1>$2</$3>");
+        
+        //:dev...:
+        if(rawdata.contains("&dev")) {
+            thePattern = Pattern.compile("&dev\t([~!@$%^*=])\t([A-Za-z0-9]+)\t");
+            theMatcher = thePattern.matcher(rawdata);
+            rawdata = theMatcher.replaceAll("<a href=\"http://$2.deviantart.com\">$1$2</a>");
+        }
         
         rawdata = rawdata.replaceAll("\t", "(t)");
         
