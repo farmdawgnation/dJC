@@ -132,6 +132,12 @@ public class damnProtocol {
                     String[] infotext= tmpBox[0].split(":");
                     dJ.echoChat(infotext[1], "*** " + whoisit[1] + " has left.");
                     dJ.getChatMemberList(infotext[1]).remove(dJ.searchList(infotext[1], whoisit[1]));
+                } else if(tmpBox[2].startsWith("kicked ")) {
+                    String[] whoisit = tmpBox[2].split(" ");
+                    String[] kicker = tmpBox[3].split("=");
+                    String[] infotext = tmpBox[0].split(":");
+                    dJ.echoChat(infotext[1], "*** " + whoisit[1] + "has been kicked by " + kicker[1] + " ** " + tmpBox[6]);
+                    dJ.getChatMemberList(infotext[1]).remove(dJ.searchList(infotext[1], whoisit[1]));
                 }
             } else if(tmpBox[0].startsWith("join chat:")) {
                 String linea[] = tmpBox[0].split(":");
@@ -222,6 +228,26 @@ public class damnProtocol {
         } else {
             dC.writeData(buildPacket(0, "send chat:" + channel, "", "msg main", "", message));
         }
+    }
+    
+    /**
+     * Sets a property in the channel.
+     * @param channel The channel for which the property will be set.
+     * @param property The channel property to be set.
+     * @param value The value to give the property.
+     */
+    public void doSet(String channel, String property, String value) {
+        dC.writeData(buildPacket(0, "set chat:" + channel, "p=" + property, "", value));
+    }
+    
+    /**
+     * Kicks a user from the specified channel.
+     * @param channel The channel from which to kick.
+     * @param user The username to kick.
+     * @param reason The reason for the kick.
+     */
+    public void doKick(String channel, String user, String reason) {
+        dC.writeData(buildPacket(0, "kick chat:" + channel, "u=" + user, "", reason));
     }
     
     /**

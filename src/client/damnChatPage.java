@@ -23,7 +23,7 @@ public class damnChatPage implements ActionListener {
     private ArrayList<JPanel> chatPages;
     private ArrayList<JEditorPane> chatTerminals;
     private ArrayList<JScrollPane> chatScrollPanes;
-    private ArrayList<JTextField> chatFields;
+    ArrayList<JTextField> chatFields;
     private ArrayList<DefaultListModel> chatMemberLists;
     private ArrayList<String> channelList;
     private damnProtocol dP;
@@ -104,8 +104,28 @@ public class damnChatPage implements ActionListener {
      */
     public void actionPerformed(ActionEvent e) {
         JTextField chatField = chatFields.get(chatFields.indexOf(e.getSource()));
-        JPanel chatPage = chatPages.get(chatFields.indexOf(e.getSource()));
-        dP.doSendMessage(chatPage.getName().substring(1), chatField.getText());
+        if(chatField.getText().startsWith("/") && chatField.getText().startsWith("/me ") == false
+                && chatField.getText().startsWith("/topic ") == false && chatField.getText().startsWith("/title ") == false
+                && chatField.getText().startsWith("/kick ") == false) {
+            dJ.actionPerformed(e);
+        } else {
+            if(chatField.getText().startsWith("/topic ") || chatField.getText().startsWith("/title ")) {
+                String channel = chatPages.get(chatFields.indexOf(e.getSource())).getName();
+                String comparts[] = chatField.getText().split(" ");
+                dP.doSet(channel.substring(1), comparts[0].substring(1), comparts[1]);
+            } else if(chatField.getText().startsWith("/kick ")) {
+                String channel = chatPages.get(chatFields.indexOf(e.getSource())).getName();
+                String comparts[] = chatField.getText().split(" ", 3);
+                if(comparts[2] != null) {
+                    dP.doKick(channel.substring(1), comparts[1], comparts[2]);
+                } else {
+                    dP.doKick(channel.substring(1), comparts[1], " ");
+                }
+            } else {
+                JPanel chatPage = chatPages.get(chatFields.indexOf(e.getSource()));
+                dP.doSendMessage(chatPage.getName().substring(1), chatField.getText());
+            }
+        }
         chatField.setText("");
     }
     

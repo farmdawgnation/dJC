@@ -63,69 +63,73 @@ public class damnApp implements ActionListener {
      * This function decides what to do when the user types a server command.
      */
     public void actionPerformed(java.awt.event.ActionEvent e) {
+        String parts[];
         if(e.getSource() == serverCommandField) {
-            String parts[] = serverCommandField.getText().split(" ");
-            if(parts[0].equalsIgnoreCase("/connect")) {
-                terminalEcho(0, "Fetching authtoken, please wait...");
-                TokenFetcher tf = new TokenFetcher("www.deviantart.com");
-                String authtoken = tf.doTokenFetch(parts[1], parts[2]);
-                if(authtoken == null) {
-                    terminalEcho(0, "Error fetching authtoken.");
-                    terminalEcho(0, "If you know what yours is use /tokenconnect to connect to dAmn.");
-                    serverCommandField.setText("");
-                    return;
-                }
-                serverTerminal.append("*** Connecting to chat.deviantart.com:3900\n");
-                protocol.setUserInfo(parts[1], authtoken);
-                commRunnable = new damnComm(protocol, "chat.deviantart.com", 3900);
-                socketThread = new Thread(commRunnable);
-                socketThread.start();
-                connected = 1;
-            } else if(parts[0].equalsIgnoreCase("/tokenconnect")) {
-                serverTerminal.append("*** Connecting to chat.deviantart.com:3900\n");
-                protocol.setUserInfo(parts[1], parts[2]);
-                commRunnable = new damnComm(protocol, "chat.deviantart.com", 3900);
-                socketThread = new Thread(commRunnable);
-                socketThread.start();
-                connected = 1;
-            } else if(parts[0].equalsIgnoreCase("/join")) {
-                if(connected == 1) {
-                    protocol.doJoinChannel(parts[1]);
-                } else {
-                    terminalEcho(0, "Gotta connect first dumbass!");
-                }
-            } else if(parts[0].equalsIgnoreCase("/part")) {
-                if(connected == 1) {
-                    protocol.doPartChannel(parts[1]);
-                } else {
-                    terminalEcho(0, "Gotta connect first you idiot.");
-                    serverCommandField.setText("");
-                }
-            } else if(parts[0].equalsIgnoreCase("/disconnect")) {
-                if(connected == 1) {
-                    damnComm dCtmp = (damnComm)commRunnable;
-                    dCtmp.shutdownComm();
-                }
-            } else if(parts[0].equalsIgnoreCase("/about")) {
-                terminalEcho(0, "");
-                terminalEcho(0, "dJC: The dAmn Java Client");
-                terminalEcho(0, "http://www.sourceforge.net/projects/damnjava");
-                terminalEcho(0, "");
-                terminalEcho(0, "Written by...");
-                terminalEcho(0, "\tMSF - Lead Developer/Project Creator");
-                terminalEcho(0, "\tMSF - Camera A");
-                terminalEcho(0, "\tMSF - Extremely bored today.");
-                terminalEcho(0, "");
-                terminalEcho(0, "If you are interested in getting involved: Let me know.");
-                terminalEcho(0, "Now back to your regularly scheduled programming...");
-                terminalEcho(0, "");
-            } else if(parts[0].equalsIgnoreCase("/token")) {
-                TokenFetcher tf = new TokenFetcher("www.deviantart.com");
-                
-                terminalEcho(0, tf.doTokenFetch(parts[1], parts[2]));
-            }
-            serverCommandField.setText("");
+            parts = serverCommandField.getText().split(" ");
+        } else {
+            JTextField txtfld = dCP.chatFields.get(dCP.chatFields.indexOf(e.getSource()));
+            parts = txtfld.getText().split(" ");
         }
+        if(parts[0].equalsIgnoreCase("/connect")) {
+            terminalEcho(0, "Fetching authtoken, please wait...");
+            TokenFetcher tf = new TokenFetcher("www.deviantart.com");
+            String authtoken = tf.doTokenFetch(parts[1], parts[2]);
+            if(authtoken == null) {
+                terminalEcho(0, "Error fetching authtoken.");
+                terminalEcho(0, "If you know what yours is use /tokenconnect to connect to dAmn.");
+                serverCommandField.setText("");
+                return;
+            }
+            serverTerminal.append("*** Connecting to chat.deviantart.com:3900\n");
+            protocol.setUserInfo(parts[1], authtoken);
+            commRunnable = new damnComm(protocol, "chat.deviantart.com", 3900);
+            socketThread = new Thread(commRunnable);
+            socketThread.start();
+            connected = 1;
+        } else if(parts[0].equalsIgnoreCase("/tokenconnect")) {
+            serverTerminal.append("*** Connecting to chat.deviantart.com:3900\n");
+            protocol.setUserInfo(parts[1], parts[2]);
+            commRunnable = new damnComm(protocol, "chat.deviantart.com", 3900);
+            socketThread = new Thread(commRunnable);
+            socketThread.start();
+            connected = 1;
+        } else if(parts[0].equalsIgnoreCase("/join")) {
+            if(connected == 1) {
+                protocol.doJoinChannel(parts[1]);
+            } else {
+                terminalEcho(0, "Gotta connect first dumbass!");
+            }
+        } else if(parts[0].equalsIgnoreCase("/part")) {
+            if(connected == 1) {
+                protocol.doPartChannel(parts[1]);
+            } else {
+                terminalEcho(0, "Gotta connect first you idiot.");
+                serverCommandField.setText("");
+            }
+        } else if(parts[0].equalsIgnoreCase("/disconnect")) {
+            if(connected == 1) {
+                damnComm dCtmp = (damnComm)commRunnable;
+                dCtmp.shutdownComm();
+            }
+        } else if(parts[0].equalsIgnoreCase("/about")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "dJC: The dAmn Java Client");
+            terminalEcho(0, "http://www.sourceforge.net/projects/damnjava");
+            terminalEcho(0, "");
+            terminalEcho(0, "Written by...");
+            terminalEcho(0, "\tMSF - Lead Developer/Project Creator");
+            terminalEcho(0, "\tMSF - Camera A");
+            terminalEcho(0, "\tMSF - Extremely bored today.");
+            terminalEcho(0, "");
+            terminalEcho(0, "If you are interested in getting involved: Let me know.");
+            terminalEcho(0, "Now back to your regularly scheduled programming...");
+            terminalEcho(0, "");
+        } else if(parts[0].equalsIgnoreCase("/token")) {
+            TokenFetcher tf = new TokenFetcher("www.deviantart.com");
+
+            terminalEcho(0, tf.doTokenFetch(parts[1], parts[2]));
+        }
+        serverCommandField.setText("");
     }
     
     /**
