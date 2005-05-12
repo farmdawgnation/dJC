@@ -15,7 +15,7 @@ import java.awt.event.*;
 
 /**
  * The main application class.
- * @version 0.2
+ * @version 0.2.2
  * @author MSF
  */
 public class damnApp implements ActionListener {
@@ -220,7 +220,7 @@ public class damnApp implements ActionListener {
         JScrollPane serverScrollPane = new JScrollPane(serverTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         serverPage.add(serverScrollPane, BorderLayout.CENTER);
         
-        serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.2\n©2005 MSF (aka DevArtDude)\nType '/about' for more info.'\n");
+        serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.2.2\n©2005 MSF (aka DevArtDude)\nType '/about' for more info.'\n");
         
         serverCommandField = new JTextField(20);
         serverCommandField.addActionListener(this);

@@ -15,7 +15,7 @@ import java.nio.*;
 
 /**
  * This is the class which manages the communications thread.
- * @version 0.2
+ * @version 0.2.2
  * @author MSF
  */
 public class damnComm implements Runnable {

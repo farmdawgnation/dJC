@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 /**
  * This is the class which manages the chat pages.
- * @version 0.2
+ * @version 0.2.2
  * @author MSF
  */
 public class damnChatPage implements ActionListener {
