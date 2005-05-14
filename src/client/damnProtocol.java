@@ -100,6 +100,7 @@ public class damnProtocol {
     public void handleMessage(String data, damnComm dC) {
         String[] tmpBox;
         tmpBox = splitPacket(data);
+        dJ.terminalEcho(1, tmpBox[0]);
         
         try {
             if(tmpBox[0].equalsIgnoreCase("ping")) {
@@ -180,7 +181,12 @@ public class damnProtocol {
                         tmpBox[5] = processTablumps(tmpBox[5]);
                         dJ.echoChat(linea[1], "*** Title for #" + linea[1] + ": " + tmpBox[5]);
                     }
-                }
+                } 
+            } else if(tmpBox[0].startsWith("property login:")) {
+                    dJ.terminalEcho(1, "User infos: ");
+                    for (int i=0; i<8; i++)
+                        dJ.terminalEcho(1, tmpBox[i+1]);
+                
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -250,6 +256,38 @@ public class damnProtocol {
         dC.writeData(buildPacket(0, "kick chat:" + channel, "u=" + user, "", reason));
     }
     
+     /**
+     * Gets user information.
+     * @param user The username to get info from.
+     * @param property The property.
+     */
+    public void doGetUserInformation(String user) {
+        dC.writeData(buildPacket(0, "get login:" + user, "p=info"));
+    }
+    
+     /**
+     * Promote a user to a privilege class
+     * @param channel The channel for which the property will be set
+     * @param user The username to promote privilege to
+     * @param privClass The promoted privilege class 
+     */
+    public void doPromote(String channel, String user, String privClass) {
+               
+        dC.writeData(buildPacket(0, "send chat:" + channel, "", "promote "+user, "pc="+privClass));
+    }
+    
+     /**
+     * Demote a user to a privilege class
+     * @param channel The channel for which the property will be set
+     * @param user The username to demtoe privilege to
+     * @param privClass The destination privilege class 
+     */
+    public void doDemote(String channel, String user, String privClass) {
+        dC.writeData(buildPacket(0, "send chat:" + channel, "", "demote "+user, "pc="+privClass));
+    }
+    
+    
+    
     /**
      * Processes Tablumps sent from the server.
      * @param rawdata The message the user sent.
@@ -261,15 +299,36 @@ public class damnProtocol {
         Matcher theMatcher;
         
         if(rawdata.contains("&emote\t")) {
-            thePattern = Pattern.compile("&emote\t([0-9A-Za-z:()\\|]+)\t([0-9]+)\t([0-9]+)\t([0-9A-Za-z:!() \\|]+)\t([0-9a-z/=.]+)\t");
+            thePattern = Pattern.compile("&emote\t([0-9A-Za-z:=()\\|]+)\t([0-9]+)\t([0-9]+)\t([0-9A-Za-z=:!'() \\|]+)\t([0-9a-z/=.]+)\t");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<img src=\"http://e.deviantart.com/emoticons/$5\" alt=\"$4\">");
         }
+
+        if(rawdata.contains("&a\t")) {
+            thePattern = Pattern.compile("&a\t([0-9A-Za-z:.()/\\|]+)\t\t([0-9A-Za-z:!'() \\|]+)*(&/a\t)*");
+            theMatcher = thePattern.matcher(rawdata);
+            rawdata = theMatcher.replaceAll("<a href=\"$1\">$2</a>");
+        }
+
+        if(rawdata.contains("&link\t")) {
+
+            thePattern = Pattern.compile("&link\t([0-9A-Za-z:.()/\\|]+)\t([a-zA-Z]+)*(&(\t))*");
+            theMatcher = thePattern.matcher(rawdata);
+            rawdata = theMatcher.replaceAll("<a href=\"$1\">$1</a>");
+        }
         
+       
         //Formatting
         thePattern = Pattern.compile("&([a-zA-Z])\t([a-zA-Z0-9]+)&/([a-zA-Z])\t");
         theMatcher = thePattern.matcher(rawdata);
         rawdata = theMatcher.replaceAll("<$1>$2</$3>");
+        
+        if(rawdata.contains("&sub\t")) {
+            thePattern = Pattern.compile("&sub\t([^&]+)(&/sub\t)*");
+            theMatcher = thePattern.matcher(rawdata);
+            rawdata = theMatcher.replaceAll("<font size=-1>$1</font>");
+        }
+
         
         //:dev...:
         if(rawdata.contains("&dev")) {
