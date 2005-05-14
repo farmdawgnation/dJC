@@ -310,12 +310,12 @@ public class damnProtocol {
             rawdata = theMatcher.replaceAll("<a href=\"$1\">$2</a>");
         }
 
-        if(rawdata.contains("&link\t")) {
+/*        if(rawdata.contains("&link\t")) {
 
             thePattern = Pattern.compile("&link\t([0-9A-Za-z:.()/\\|]+)\t([a-zA-Z]+)*(&(\t))*");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<a href=\"$1\">$1</a>");
-        }
+        }*/
         
        
         //Formatting
