@@ -23,7 +23,7 @@ public class damnProtocol {
     damnComm dC;
     private String username;
     private String password;
-    
+   
     /**
      * Protocol Interface Constructor
      * @param appObj A reference to the Application's dAmnApp object.
@@ -294,50 +294,97 @@ public class damnProtocol {
      * @return The HTML Formatted message. Tablump free!
      */
     private String processTablumps(String rawdata) {
-        //Emoticons
         Pattern thePattern;
         Matcher theMatcher;
+
+        /*PrintWriter out, out2;
+        try {
+        out = new PrintWriter(new FileWriter("out.txt", true));
+        out2 = new PrintWriter(new FileWriter("out2.txt", true));
+        out.println( rawdata.replaceAll("\t", "/t") );*/
         
+        
+        // Emoticons
         if(rawdata.contains("&emote\t")) {
-            thePattern = Pattern.compile("&emote\t([^\t]+)\t([0-9]+)\t([0-9]+)\t([^\t]+)\t([0-9a-z/=.]+)\t");
+            thePattern = Pattern.compile("&emote\t([^\t]+)\t([0-9]+)\t([0-9]+)\t([^\t]*)\t([^\t]+)\t");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<img src=\"http://e.deviantart.com/emoticons/$5\" alt=\"$4\">");
         }
 
-        if(rawdata.contains("&a\t")) {
-            thePattern = Pattern.compile("&a\t([0-9A-Za-z:.()/\\|]+)\t\t([0-9A-Za-z:!'() \\|]+)*(&/a\t)*");
+        // Thumbnails
+        if(rawdata.contains("&thumb\t")) {
+            thePattern = Pattern.compile("&thumb\t(\\d+)\t([^\t]*)\t([^\t]*)\t(\\d+)x(\\d+)\t(\\d+)\t([^\t]+)\t([^\t]*)\t");
             theMatcher = thePattern.matcher(rawdata);
-            rawdata = theMatcher.replaceAll("<a href=\"$1\">$2</a>");
-        }
+            theMatcher.find();
+            
+            String url = theMatcher.group(7);
+            Pattern p = Pattern.compile("fs(\\d):");
+            Matcher m = p.matcher( url );
+            url = m.replaceAll("fs$1.deviantart.com/");
 
-        if(rawdata.contains("&link\t")) {
-
-            thePattern = Pattern.compile("&link\t([0-9A-Za-z:.()/\\|]+)\t([a-zA-Z]+)*(&(\t))*");
-            theMatcher = thePattern.matcher(rawdata);
-            rawdata = theMatcher.replaceAll("<a href=\"$1\">$1</a>");
+            int Width = Integer.parseInt( theMatcher.group(4) );
+            int Height = Integer.parseInt( theMatcher.group(5) );
+            
+            if (Width>100) {
+                //http://www.deviantart.com/view/15696906
+                rawdata = theMatcher.replaceAll("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\"></a>");
+            } else {
+                rawdata = theMatcher.replaceAll("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"></a>");
+            }
         }
         
+        
+        // http://a.deviantart.com/avatars/i/g/igy.gif
+        
+        
+        // Anchor
+        if(rawdata.contains("&a\t")) {
+            thePattern = Pattern.compile("&a\t([^\t]+)\t([^\t]*)\t([^&]+)&/a\t");
+            theMatcher = thePattern.matcher(rawdata);
+            rawdata = theMatcher.replaceAll("<a href=\"$1\" alt=\"$3\">$2$3</a>");
+        }
+
+        // Links
+        if(rawdata.contains("&link\t")) {
+            thePattern = Pattern.compile("&link\t([^\t]+)\t([^\t]+)\t(&(\t))*");
+            theMatcher = thePattern.matcher(rawdata);
+            rawdata = theMatcher.replaceAll("<a href=\"$1\">[link]</a>");
+        }
        
         //Formatting
-        thePattern = Pattern.compile("&([a-zA-Z])\t([^&]+)&/([a-zA-Z])\t");
+        thePattern = Pattern.compile("&b\t(.*?)&/b\t");
         theMatcher = thePattern.matcher(rawdata);
-        rawdata = theMatcher.replaceAll("<$1>$2</$3>");
+        rawdata = theMatcher.replaceAll("<b>$1</b>");
         
-        if(rawdata.contains("&sub\t")) {
-            thePattern = Pattern.compile("&sub\t(.+)&/sub\t");
-            theMatcher = thePattern.matcher(rawdata);
-            rawdata = theMatcher.replaceAll("<font size=-1>$1</font>");
-        }
+        thePattern = Pattern.compile("&i\t(.*?)&/i\t");
+        theMatcher = thePattern.matcher(rawdata);
+        rawdata = theMatcher.replaceAll("<i>$1</i>");
+        
+        // <BR>
+        thePattern = Pattern.compile("&([bB][rR])\t");
+        theMatcher = thePattern.matcher(rawdata);
+        rawdata = theMatcher.replaceAll("<$1>");
 
-        
+        if(rawdata.contains("&sub\t")) {
+            thePattern = Pattern.compile("&sub\t(.*?)&/sub\t");
+            theMatcher = thePattern.matcher(rawdata);
+            rawdata = theMatcher.replaceAll("<font size=\"-1\">$1</font>");
+        }
+       
         //:dev...:
+        //&dev(t)+(t)faq(t)
         if(rawdata.contains("&dev")) {
-            thePattern = Pattern.compile("&dev\t([~!@$%^*=])\t([A-Za-z0-9]+)\t");
+            thePattern = Pattern.compile("&dev\t([~!@$+%^*=])\t([A-Za-z0-9]+)\t");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<a href=\"http://$2.deviantart.com\">$1$2</a>");
         }
         
-        rawdata = rawdata.replaceAll("\t", "(t)");
+        rawdata = rawdata.replaceAll("\t", "/t");
+
+/*        out2.println( rawdata );
+        out.close();
+        out2.close();
+        } catch (Exception e) {};*/
         
         return rawdata;
     }
