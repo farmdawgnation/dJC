@@ -100,7 +100,7 @@ public class damnProtocol {
     public void handleMessage(String data, damnComm dC) {
         String[] tmpBox;
         tmpBox = splitPacket(data);
-        dJ.terminalEcho(1, tmpBox[0]);
+        //dJ.terminalEcho(1, tmpBox[0]);
         
         try {
             if(tmpBox[0].equalsIgnoreCase("ping")) {
@@ -299,7 +299,7 @@ public class damnProtocol {
         Matcher theMatcher;
         
         if(rawdata.contains("&emote\t")) {
-            thePattern = Pattern.compile("&emote\t([0-9A-Za-z:=()\\|]+)\t([0-9]+)\t([0-9]+)\t([0-9A-Za-z=:!'() \\|]+)\t([0-9a-z/=.]+)\t");
+            thePattern = Pattern.compile("&emote\t([^\t]+)\t([0-9]+)\t([0-9]+)\t([^\t]+)\t([0-9a-z/=.]+)\t");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<img src=\"http://e.deviantart.com/emoticons/$5\" alt=\"$4\">");
         }
@@ -310,21 +310,21 @@ public class damnProtocol {
             rawdata = theMatcher.replaceAll("<a href=\"$1\">$2</a>");
         }
 
-/*        if(rawdata.contains("&link\t")) {
+        if(rawdata.contains("&link\t")) {
 
             thePattern = Pattern.compile("&link\t([0-9A-Za-z:.()/\\|]+)\t([a-zA-Z]+)*(&(\t))*");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<a href=\"$1\">$1</a>");
-        }*/
+        }
         
        
         //Formatting
-        thePattern = Pattern.compile("&([a-zA-Z])\t([a-zA-Z0-9]+)&/([a-zA-Z])\t");
+        thePattern = Pattern.compile("&([a-zA-Z])\t([^&]+)&/([a-zA-Z])\t");
         theMatcher = thePattern.matcher(rawdata);
         rawdata = theMatcher.replaceAll("<$1>$2</$3>");
         
         if(rawdata.contains("&sub\t")) {
-            thePattern = Pattern.compile("&sub\t([^&]+)(&/sub\t)*");
+            thePattern = Pattern.compile("&sub\t(.+)&/sub\t");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<font size=-1>$1</font>");
         }
