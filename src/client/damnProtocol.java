@@ -297,11 +297,11 @@ public class damnProtocol {
         Pattern thePattern;
         Matcher theMatcher;
 
-        /*PrintWriter out, out2;
+        PrintWriter out, out2;
         try {
         out = new PrintWriter(new FileWriter("out.txt", true));
         out2 = new PrintWriter(new FileWriter("out2.txt", true));
-        out.println( rawdata.replaceAll("\t", "/t") );*/
+        out.println( rawdata.replaceAll("\t", "/t") );
         
         
         // Emoticons
@@ -311,25 +311,29 @@ public class damnProtocol {
             rawdata = theMatcher.replaceAll("<img src=\"http://e.deviantart.com/emoticons/$5\" alt=\"$4\">");
         }
 
-        // Thumbnails
+         // Thumbnails
         if(rawdata.contains("&thumb\t")) {
             thePattern = Pattern.compile("&thumb\t(\\d+)\t([^\t]*)\t([^\t]*)\t(\\d+)x(\\d+)\t(\\d+)\t([^\t]+)\t([^\t]*)\t");
             theMatcher = thePattern.matcher(rawdata);
-            theMatcher.find();
             
-            String url = theMatcher.group(7);
-            Pattern p = Pattern.compile("fs(\\d):");
-            Matcher m = p.matcher( url );
-            url = m.replaceAll("fs$1.deviantart.com/");
-
-            int Width = Integer.parseInt( theMatcher.group(4) );
-            int Height = Integer.parseInt( theMatcher.group(5) );
-            
-            if (Width>100) {
-                //http://www.deviantart.com/view/15696906
-                rawdata = theMatcher.replaceAll("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\"></a>");
-            } else {
-                rawdata = theMatcher.replaceAll("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"></a>");
+            while (theMatcher.find()) {
+                String url = theMatcher.group(7);
+                Pattern p = Pattern.compile("fs(\\d):");
+                Matcher m = p.matcher( url );
+                url = m.replaceAll("fs$1.deviantart.com/");
+                
+                int Width = Integer.parseInt( theMatcher.group(4) );
+                int Height = Integer.parseInt( theMatcher.group(5) );
+                
+                if (Width>100) {
+                    //http://www.deviantart.com/view/15696906
+                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\"></a>");
+                } else {
+                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\"></a>");
+                }
+                
+                theMatcher = thePattern.matcher(rawdata);
+       
             }
         }
         
@@ -338,8 +342,9 @@ public class damnProtocol {
         
         
         // Anchor
+        // &a/thttp://photography.deviantart.com/t/tphotography.deviantart.com&/a
         if(rawdata.contains("&a\t")) {
-            thePattern = Pattern.compile("&a\t([^\t]+)\t([^\t]*)\t([^&]+)&/a\t");
+            thePattern = Pattern.compile("&a\t([^\t]*?)\t([^\t]*?)\t([^&]*?)&/a\t");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<a href=\"$1\" alt=\"$3\">$2$3</a>");
         }
@@ -381,10 +386,10 @@ public class damnProtocol {
         
         rawdata = rawdata.replaceAll("\t", "/t");
 
-/*        out2.println( rawdata );
+        out2.println( rawdata );
         out.close();
         out2.close();
-        } catch (Exception e) {};*/
+        } catch (Exception e) {};
         
         return rawdata;
     }
