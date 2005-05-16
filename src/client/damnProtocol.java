@@ -357,13 +357,9 @@ public class damnProtocol {
         }
        
         //Formatting
-        thePattern = Pattern.compile("&b\t(.*?)&/b\t");
+        thePattern = Pattern.compile("&([a-zA-Z])\t(.*?)&/\\1\t");
         theMatcher = thePattern.matcher(rawdata);
-        rawdata = theMatcher.replaceAll("<b>$1</b>");
-        
-        thePattern = Pattern.compile("&i\t(.*?)&/i\t");
-        theMatcher = thePattern.matcher(rawdata);
-        rawdata = theMatcher.replaceAll("<i>$1</i>");
+        rawdata = theMatcher.replaceAll("<$1>$2</$1>");
         
         // <BR>
         thePattern = Pattern.compile("&([bB][rR])\t");
