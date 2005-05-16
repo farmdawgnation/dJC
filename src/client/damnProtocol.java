@@ -297,11 +297,11 @@ public class damnProtocol {
         Pattern thePattern;
         Matcher theMatcher;
 
-        PrintWriter out, out2;
+/*        PrintWriter out, out2;
         try {
         out = new PrintWriter(new FileWriter("out.txt", true));
         out2 = new PrintWriter(new FileWriter("out2.txt", true));
-        out.println( rawdata.replaceAll("\t", "/t") );
+        out.println( rawdata.replaceAll("\t", "/t") );*/
         
         
         // Emoticons
@@ -386,9 +386,9 @@ public class damnProtocol {
         
         rawdata = rawdata.replaceAll("\t", "/t");
 
-        out2.println( rawdata );
+/*        out2.println( rawdata );
         out.close();
-        out2.close();
+        out2.close();*/
         } catch (Exception e) {};
         
         return rawdata;
