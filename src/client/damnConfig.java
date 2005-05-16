@@ -152,6 +152,13 @@ public class damnConfig {
     }
     
     /**
+     * Clears all of the channels out of the configuration.
+     */
+    public void clearChannels() {
+        _channels.clear();
+    }
+    
+    /**
      * Gets the configured channels 
      * @return String array of channels
      */

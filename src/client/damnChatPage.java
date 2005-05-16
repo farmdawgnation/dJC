@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import javax.swing.text.html.*;
 
 /**
  * This is the class which manages the chat pages.
@@ -58,7 +59,7 @@ public class damnChatPage implements ActionListener {
         //chatTerminal.setLineWrap(true);
         chatTerminal.setEditable(false);
         chatTerminal.setContentType("text/html");
-        chatTerminal.setText("<html><body>");
+        chatTerminal.setText("<html><body>&nbsp;");
         JScrollPane chatScrollPane = new JScrollPane(chatTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         chatScrollPane.setAutoscrolls(true);
         chatPage.add(chatScrollPane, BorderLayout.CENTER);
@@ -137,8 +138,17 @@ public class damnChatPage implements ActionListener {
      */
     public synchronized void echoChat(String channel, String user, String message) {
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
-        chatTerminal.setText(chatTerminal.getText().replace("</body>\n</html>", "&lt;" + user + "&gt; " + message + "<br>"));
-        chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
+        
+        HTMLEditorKit ht = (HTMLEditorKit) chatTerminal.getEditorKit();
+        try {
+            ht.insertHTML((HTMLDocument)chatTerminal.getDocument(), chatTerminal.getDocument().getLength(), "<DIV>&lt;" + user + "&gt; " +message+"<BR></DIV>", 0, 0, HTML.Tag.DIV);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength()-1);
+        chatTerminal.invalidate();
+
     }
     
     /**
@@ -148,8 +158,15 @@ public class damnChatPage implements ActionListener {
      */
     public synchronized void echoChat(String channel, String message) {
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
-        chatTerminal.setText(chatTerminal.getText().replace("</body>\n</html>", message + "<br>"));
-        chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
+        HTMLEditorKit ht = (HTMLEditorKit) chatTerminal.getEditorKit();
+        try {
+            ht.insertHTML((HTMLDocument)chatTerminal.getDocument(), chatTerminal.getDocument().getLength(), "<DIV>"+message+"<BR></DIV>", 0, 0, HTML.Tag.DIV);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength()-1);
+        chatTerminal.invalidate();
+        
     }
     
     /**

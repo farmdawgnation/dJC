@@ -24,23 +24,33 @@ public class damnApp implements ActionListener {
     private JTextArea serverTerminal;
     private JFrame frame;
     private JTextField serverCommandField;
-    private String inChannel;
     private int connected=0;
-    damnProtocol protocol;
-    Thread socketThread;
-    Runnable commRunnable;
+    private damnProtocol protocol;
+    private Thread socketThread;
+    private Runnable commRunnable;
     private damnChatPage dCP;
-    private String[] cpNames;
-    private int cpInterval = 0;
+    private damnProperties prop;
+    private damnConfig conf;
+    
+    private JMenuBar menuBar;
+    private JMenu fileMenu;
+    private JMenu helpMenu;
+    private JMenuItem connectItem;
+    private JMenuItem disconnectItem;
+    private JMenuItem preferencesItem;
+    private JMenuItem exitItem;
+    private JMenuItem aboutItem;
+    
     
     /**
      * damnApp constructor.
      * Initilizes protocol and dCP.
      */
     public damnApp() {
-        inChannel = new String();
-        protocol = new damnProtocol(this);
+        conf = damnConfig.getInstance();
+        protocol = new damnProtocol(this, conf);
         dCP = new damnChatPage(this, protocol);
+        prop = new damnProperties(conf);
     }
     
     /**
@@ -66,6 +76,38 @@ public class damnApp implements ActionListener {
         String parts[];
         if(e.getSource() == serverCommandField) {
             parts = serverCommandField.getText().split(" ");
+        } else if(e.getSource() == preferencesItem) {
+            prop.showProperties();
+            return;
+        } else if(e.getSource() == connectItem) {
+            terminalEcho(0, "Fetching authtoken, please wait...");
+            TokenFetcher tf = new TokenFetcher("www.deviantart.com");
+            String authtoken = tf.doTokenFetch(conf.getUser(), conf.getPassword());
+            if(authtoken == null) {
+                terminalEcho(0, "Error fetching authtoken.");
+                terminalEcho(0, "If you know what yours is use /tokenconnect to connect to dAmn.");
+                serverCommandField.setText("");
+                return;
+            }
+            serverTerminal.append("*** Connecting to " + conf.getHost() + ":" + String.format("%d", conf.getPort()) + "\n");
+            protocol.setUserInfo(conf.getUser(), authtoken);
+            commRunnable = new damnComm(protocol, conf.getHost(), conf.getPort());
+            socketThread = new Thread(commRunnable);
+            socketThread.start();
+            connected = 1;
+            connectItem.setEnabled(false);
+            disconnectItem.setEnabled(true);
+            return;
+        } else if(e.getSource() == disconnectItem) {
+            if(connected == 1) {
+                damnComm dCtmp = (damnComm)commRunnable;
+                dCtmp.shutdownComm();
+                connected = 0;
+                terminalEcho(0, "Disconnected.");
+                connectItem.setEnabled(true);
+                disconnectItem.setEnabled(false);
+            }
+            return;
         } else {
             JTextField txtfld = dCP.chatFields.get(dCP.chatFields.indexOf(e.getSource()));
             parts = txtfld.getText().split(" ");
@@ -80,19 +122,23 @@ public class damnApp implements ActionListener {
                 serverCommandField.setText("");
                 return;
             }
-            serverTerminal.append("*** Connecting to chat.deviantart.com:3900\n");
+            serverTerminal.append("*** Connecting to " + conf.getHost() + ":" + String.format("%d", conf.getPort()) + "\n");
             protocol.setUserInfo(parts[1], authtoken);
-            commRunnable = new damnComm(protocol, "chat.deviantart.com", 3900);
+            commRunnable = new damnComm(protocol, conf.getHost(), conf.getPort());
             socketThread = new Thread(commRunnable);
             socketThread.start();
             connected = 1;
+            connectItem.setEnabled(false);
+            disconnectItem.setEnabled(true);
         } else if(parts[0].equalsIgnoreCase("/tokenconnect")) {
-            serverTerminal.append("*** Connecting to chat.deviantart.com:3900\n");
+            serverTerminal.append("*** Connecting to " + conf.getHost() + ":" + String.format("%d", conf.getPort()) + "\n");
             protocol.setUserInfo(parts[1], parts[2]);
-            commRunnable = new damnComm(protocol, "chat.deviantart.com", 3900);
+            commRunnable = new damnComm(protocol, conf.getHost(), conf.getPort());commRunnable = new damnComm(protocol, conf.getHost(), conf.getPort());
             socketThread = new Thread(commRunnable);
             socketThread.start();
             connected = 1;
+            connectItem.setEnabled(false);
+            disconnectItem.setEnabled(true);
         } else if(parts[0].equalsIgnoreCase("/join")) {
             if(connected == 1) {
                 protocol.doJoinChannel(parts[1]);
@@ -110,6 +156,10 @@ public class damnApp implements ActionListener {
             if(connected == 1) {
                 damnComm dCtmp = (damnComm)commRunnable;
                 dCtmp.shutdownComm();
+                connected = 0;
+                terminalEcho(0, "Disconnected.");
+                connectItem.setEnabled(true);
+                disconnectItem.setEnabled(false);
             }
         } else if(parts[0].equalsIgnoreCase("/about")) {
             terminalEcho(0, "");
@@ -117,17 +167,19 @@ public class damnApp implements ActionListener {
             terminalEcho(0, "http://www.sourceforge.net/projects/damnjava");
             terminalEcho(0, "");
             terminalEcho(0, "Written by...");
-            terminalEcho(0, "\tMSF - Lead Developer/Project Creator");
-            terminalEcho(0, "\tMSF - Camera A");
-            terminalEcho(0, "\tMSF - Extremely bored today.");
+            terminalEcho(0, "\tMSF - Lead Developer/Project Manager");
+            terminalEcho(0, "\tEric Olander - Developer");
+            terminalEcho(0, "\tMiklosi Attila - Developer");
             terminalEcho(0, "");
-            terminalEcho(0, "If you are interested in getting involved: Let me know.");
+            terminalEcho(0, "If you are interested in getting involved: Let MSF know.");
             terminalEcho(0, "Now back to your regularly scheduled programming...");
             terminalEcho(0, "");
         } else if(parts[0].equalsIgnoreCase("/token")) {
             TokenFetcher tf = new TokenFetcher("www.deviantart.com");
 
             terminalEcho(0, tf.doTokenFetch(parts[1], parts[2]));
+        } else {
+            terminalEcho(0, "Unknown Command.");
         }
         serverCommandField.setText("");
     }
@@ -203,13 +255,40 @@ public class damnApp implements ActionListener {
      * Constructs and shows the interface for the application.
      */
     private void damnShowInterface() {
-        //JFrame.setDefaultLookAndFeelDecorated(true);
         frame = new JFrame("dJC: The dAmn Java Client");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        /*JButton button = new JButton("<html><body><b>I</b> <i>am a swing button!</i></body></html>");
+        menuBar = new JMenuBar();
         
-        JLabel label = new JLabel("Hello World");*/
+        //File Menu
+        fileMenu = new JMenu("File");
+        menuBar.add(fileMenu);
+        
+        //Help Menu
+        helpMenu = new JMenu("Help");
+        menuBar.add(helpMenu);
+        
+        //File Menu Items
+        connectItem = new JMenuItem("Connect");
+        connectItem.addActionListener(this);
+        fileMenu.add(connectItem);
+        disconnectItem = new JMenuItem("Disconnect");
+        disconnectItem.addActionListener(this);
+        disconnectItem.setEnabled(false);
+        fileMenu.add(disconnectItem);
+        preferencesItem = new JMenuItem("Preferences");
+        preferencesItem.addActionListener(this);
+        fileMenu.add(preferencesItem);
+        exitItem = new JMenuItem("Exit");
+        fileMenu.add(exitItem);
+        
+        //Help Menu Items
+        aboutItem = new JMenuItem("About");
+        helpMenu.add(aboutItem);
+        
+        //Set the Menu Bar
+        frame.setJMenuBar(menuBar);
+        
         tabbedPane = new JTabbedPane();
         tabbedPane.setPreferredSize(new java.awt.Dimension(800, 600));
         serverPage = new JPanel(new BorderLayout(5, 5));
@@ -220,7 +299,7 @@ public class damnApp implements ActionListener {
         JScrollPane serverScrollPane = new JScrollPane(serverTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         serverPage.add(serverScrollPane, BorderLayout.CENTER);
         
-        serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.2.2\n©2005 MSF (aka DevArtDude)\nType '/about' for more info.'\n");
+        serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.2.2\n©2005 The dAmn Java Project\nType '/about' for more info.'\n");
         
         serverCommandField = new JTextField(20);
         serverCommandField.addActionListener(this);
@@ -237,14 +316,32 @@ public class damnApp implements ActionListener {
     }
     
     /**
+     * This function preforms all startup operations for the program.
+     */
+    public void go() {
+        try {
+            conf.readConfig();
+        } catch (InvalidXMLException ex) {
+            ex.printStackTrace();
+        } catch (java.io.FileNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        
+        damnShowInterface();
+    }
+    
+    /**
      * The starting point for the application.
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (Exception e) { }
                 damnApp dJ = new damnApp();
-                dJ.damnShowInterface();
+                dJ.go();
             }
         });
     }

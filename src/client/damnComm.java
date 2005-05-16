@@ -39,7 +39,7 @@ public class damnComm implements Runnable {
      */
     public damnComm(damnProtocol protocolObj, String hostStr, int portNum) {
         dP = protocolObj;
-        dP.dC = this;
+        dP.setComm(this);
         host = hostStr;
         port = portNum;
     }

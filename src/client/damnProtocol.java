@@ -20,7 +20,8 @@ import java.util.regex.*;
  */
 public class damnProtocol {
     private damnApp dJ;
-    damnComm dC;
+    private damnComm dC;
+    private damnConfig conf;
     private String username;
     private String password;
    
@@ -28,8 +29,17 @@ public class damnProtocol {
      * Protocol Interface Constructor
      * @param appObj A reference to the Application's dAmnApp object.
      */
-    public damnProtocol(damnApp appObj) {
+    public damnProtocol(damnApp appObj, damnConfig configObj) {
         dJ = appObj;
+        conf = configObj;
+    }
+    
+    /**
+     * Sets damnComm.
+     * @param commObj The the damnComm object to link.
+     */
+    public void setComm(damnComm commObj) {
+        dC = commObj;
     }
     
     /**
@@ -109,6 +119,8 @@ public class damnProtocol {
                 String[] event = tmpBox[1].split("=");
                 if(event[1].equalsIgnoreCase("ok")) {
                     dJ.terminalEcho(0, "Login Successful");
+                    dJ.terminalEcho(0, "Preforming post-login functions...");
+                    doMassJoin(conf.getChannels());
                 } else {
                     dJ.terminalEcho(0, "Login Unsuccessful, please close connection and try again.");
                 }
@@ -125,6 +137,7 @@ public class damnProtocol {
                     dJ.echoChat(infotext[1], "*** " + fromtext[1] + " " + tmpBox[5]);
                 } else if(tmpBox[2].startsWith("join ")) {
                     String[] whoisit = tmpBox[2].split(" ");
+                    String[] symbol = tmpBox[7].split("=");
                     String[] infotext= tmpBox[0].split(":");
                     dJ.echoChat(infotext[1], "*** " + whoisit[1] + " has joined.");
                     dJ.getChatMemberList(infotext[1]).addElement(whoisit[1]);
@@ -211,6 +224,16 @@ public class damnProtocol {
     public void doJoinChannel(String channel) {
         dC.writeData(buildPacket(1, "join chat:" + channel));
         dJ.terminalEcho(1, "join #" + channel + "...");
+    }
+    
+    /**
+     * Implements the mass join feature. Used for autojoin.
+     * @param channels The channels to join.
+     */
+    public void doMassJoin(String[] channels) {
+        for(int i=0;i < channels.length;i++) {
+            doJoinChannel(channels[i]);
+        }
     }
     
     /**
@@ -384,8 +407,8 @@ public class damnProtocol {
 
 /*        out2.println( rawdata );
         out.close();
-        out2.close();*/
-        } catch (Exception e) {};
+        out2.close();
+        } catch (Exception e) {};*/
         
         return rawdata;
     }
