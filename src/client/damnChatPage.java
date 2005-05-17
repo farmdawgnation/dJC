@@ -61,7 +61,7 @@ public class damnChatPage implements ActionListener {
         //chatTerminal.setLineWrap(true);
         chatTerminal.setEditable(false);
         chatTerminal.setContentType("text/html");
-        chatTerminal.setText("<html><body> <BR> </body></html>");
+        chatTerminal.setText("<html><body>  </body></html>");
         JScrollPane chatScrollPane = new JScrollPane(chatTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         chatScrollPane.setAutoscrolls(true);
         chatPage.add(chatScrollPane, BorderLayout.CENTER);
@@ -157,7 +157,11 @@ public class damnChatPage implements ActionListener {
         
         HTMLEditorKit ht = (HTMLEditorKit) chatTerminal.getEditorKit();
         try {
-            insertHTML(chatTerminal, "&lt;" + user + "&gt; " +message+"<BR>", chatTerminal.getDocument().getLength()-1);
+            if(message.contains(dP.getUser())) {
+                insertHTML(chatTerminal, "<div style=\"background-color:#BBC2BB\">&lt;" + user + "&gt; " +message+"</div>", chatTerminal.getDocument().getLength());
+            } else {
+                insertHTML(chatTerminal, "<div>&lt;" + user + "&gt; " +message+"</div>", chatTerminal.getDocument().getLength());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -177,7 +181,11 @@ public class damnChatPage implements ActionListener {
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
         HTMLEditorKit ht = (HTMLEditorKit) chatTerminal.getEditorKit();
         try {
-            insertHTML(chatTerminal, message, chatTerminal.getDocument().getLength()-1);
+            if(message.contains(dP.getUser())) {
+                insertHTML(chatTerminal, "<div style=\"background-color:#BBC2BB\">" + message + "</div>", chatTerminal.getDocument().getLength());
+            } else {
+                insertHTML(chatTerminal, "<div>" + message + "</div>", chatTerminal.getDocument().getLength());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
