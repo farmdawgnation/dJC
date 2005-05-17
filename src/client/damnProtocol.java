@@ -347,12 +347,16 @@ public class damnProtocol {
                 
                 int Width = Integer.parseInt( theMatcher.group(4) );
                 int Height = Integer.parseInt( theMatcher.group(5) );
+                int nw, nh;
                 
                 if (Width>100) {
                     //http://www.deviantart.com/view/15696906
-                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\"></a>");
+                    if (Width>Height) { nw = 100;  nh = 100 * Height / Width; }
+                    else { nh = 100; nw = 100 * Width / Height; }
+                    
+                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\"></a>");
                 } else {
-                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\"></a>");
+                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\"></a>");
                 }
                 
                 theMatcher = thePattern.matcher(rawdata);
@@ -362,6 +366,7 @@ public class damnProtocol {
         
         
         // http://a.deviantart.com/avatars/i/g/igy.gif
+        // &avatar/tspappara/t1/t
         
         
         // Anchor
