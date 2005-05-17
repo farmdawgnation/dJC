@@ -296,6 +296,7 @@ public class damnApp implements ActionListener {
         
         serverTerminal = new JTextArea(5, 20);
         serverTerminal.setLineWrap(true);
+        serverTerminal.setEditable(false);
         JScrollPane serverScrollPane = new JScrollPane(serverTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         serverPage.add(serverScrollPane, BorderLayout.CENTER);
         
