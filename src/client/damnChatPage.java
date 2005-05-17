@@ -12,7 +12,9 @@ package client;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.StringReader;
 import java.util.ArrayList;
+import javax.swing.text.Document;
 import javax.swing.text.html.*;
 
 /**
@@ -59,7 +61,7 @@ public class damnChatPage implements ActionListener {
         //chatTerminal.setLineWrap(true);
         chatTerminal.setEditable(false);
         chatTerminal.setContentType("text/html");
-        chatTerminal.setText("<html><body>&nbsp;");
+        chatTerminal.setText("<html><body> <BR> </body></html>");
         JScrollPane chatScrollPane = new JScrollPane(chatTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         chatScrollPane.setAutoscrolls(true);
         chatPage.add(chatScrollPane, BorderLayout.CENTER);
@@ -129,6 +131,20 @@ public class damnChatPage implements ActionListener {
         }
         chatField.setText("");
     }
+
+    /**
+     * Inserts a line into the HTML doucment
+     * @param editor the JEditorPane component
+     * @param html the line to be inserted
+     * @param location the valid location in the document, where to insert
+     */
+    private void insertHTML(JEditorPane editor, String html, int location)
+            throws Exception {
+        HTMLEditorKit kit = (HTMLEditorKit) editor.getEditorKit();
+        Document doc = editor.getDocument();
+        StringReader reader = new StringReader(html);
+        kit.read(reader, doc, location);
+    }
     
     /**
      * Writes a user message to a chat page.
@@ -141,15 +157,16 @@ public class damnChatPage implements ActionListener {
         
         HTMLEditorKit ht = (HTMLEditorKit) chatTerminal.getEditorKit();
         try {
-            ht.insertHTML((HTMLDocument)chatTerminal.getDocument(), chatTerminal.getDocument().getLength(), "<DIV>&lt;" + user + "&gt; " +message+"<BR></DIV>", 0, 0, HTML.Tag.DIV);
+            insertHTML(chatTerminal, "&lt;" + user + "&gt; " +message+"<BR>", chatTerminal.getDocument().getLength()-1);
         } catch (Exception e) {
             e.printStackTrace();
         }
         
-        chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength()-1);
+        chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
         chatTerminal.invalidate();
 
     }
+    
     
     /**
      * Writes a misc message to a chat page.
@@ -160,11 +177,11 @@ public class damnChatPage implements ActionListener {
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
         HTMLEditorKit ht = (HTMLEditorKit) chatTerminal.getEditorKit();
         try {
-            ht.insertHTML((HTMLDocument)chatTerminal.getDocument(), chatTerminal.getDocument().getLength(), "<DIV>"+message+"<BR></DIV>", 0, 0, HTML.Tag.DIV);
+            insertHTML(chatTerminal, message, chatTerminal.getDocument().getLength()-1);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength()-1);
+        chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
         chatTerminal.invalidate();
         
     }
