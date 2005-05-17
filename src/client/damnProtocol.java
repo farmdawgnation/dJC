@@ -53,6 +53,14 @@ public class damnProtocol {
     }
     
     /**
+     * Gets the username for the protocol.
+     * @returns The username.
+     */
+    public String getUser() {
+        return username;
+    }
+    
+    /**
      * Builds a dAmn Packet.
      * @param termnewline Indicates wether or not to terminate in a newline
      * @param commadn The command to send.
