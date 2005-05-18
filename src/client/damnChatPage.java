@@ -117,7 +117,7 @@ public class damnChatPage implements ActionListener {
         } else {
             if(chatField.getText().startsWith("/topic ") || chatField.getText().startsWith("/title ")) {
                 String channel = chatPages.get(chatFields.indexOf(e.getSource())).getName();
-                String comparts[] = chatField.getText().split(" ");
+                String comparts[] = chatField.getText().split(" ", 2);
                 dP.doSet(channel.substring(1), comparts[0].substring(1), comparts[1]);
             } else if(chatField.getText().startsWith("/kick ")) {
                 String channel = chatPages.get(chatFields.indexOf(e.getSource())).getName();
