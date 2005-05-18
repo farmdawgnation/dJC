@@ -414,7 +414,7 @@ public class damnProtocol {
         //:dev...:
         //&dev(t)+(t)faq(t)
         if(rawdata.contains("&dev")) {
-            thePattern = Pattern.compile("&dev\t([~!@$+%^*=])\t([A-Za-z0-9]+)\t");
+            thePattern = Pattern.compile("&dev\t([~!@$+%^*`'=])\t([A-Za-z0-9\\-]+)\t");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<a href=\"http://$2.deviantart.com\">$1$2</a>");
         }

@@ -63,7 +63,7 @@ public class damnChatPage implements ActionListener {
         //chatTerminal.setLineWrap(true);
         chatTerminal.setEditable(false);
         chatTerminal.setContentType("text/html");
-        chatTerminal.setText("<html><head><style type=\"text/css\">\n a { color:#222222 } \n td.tn { margin-right:2px; margin-left: 2px; margin-top:2px; margin-bottom:2px; background-color: #555555} </style>"+
+        chatTerminal.setText("<html><head><style type=\"text/css\">\n a { color:#222222 } \n td.tn { margin-right:2px; margin-left: 2px; margin-top:2px; margin-bottom:2px; } </style>"+
                 "</head><body></body></html>");
         JScrollPane chatScrollPane = new JScrollPane(chatTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         chatScrollPane.setAutoscrolls(true);
@@ -161,7 +161,7 @@ public class damnChatPage implements ActionListener {
             String highLight = "";
             if(user.toLowerCase().contains(dP.getUser().toLowerCase())) highLight = "bgcolor=\"#BBC2BB\"";
             
-            String style = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr "+highLight+"><td valign=\"middle\">";
+            String style = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr "+highLight+"><td valign=\"middle\" nowrap>";
             String styleEnd = "</table>";
 
             insertHTML(chatTerminal, style+"&lt;<B>"+ user + "</B>&gt;&nbsp;<td valign=\"middle\">" +message+ styleEnd, chatTerminal.getDocument().getLength());
