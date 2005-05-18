@@ -327,6 +327,7 @@ public class damnProtocol {
     private String processTablumps(String rawdata) {
         Pattern thePattern;
         Matcher theMatcher;
+        String imgStyle = "";
 
 /*        PrintWriter out, out2;
         try {
@@ -361,10 +362,10 @@ public class damnProtocol {
                     //http://www.deviantart.com/view/15696906
                     if (Width>Height) { nw = 100;  nh = 100 * Height / Width; }
                     else { nh = 100; nw = 100 * Width / Height; }
-                    
-                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\"></a>");
+                    String link = "<a href=\"www.deviantart.com/view/$1\">";
+                    rawdata = theMatcher.replaceFirst("<td class=\"tn\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\" "+imgStyle+"></td>");
                 } else {
-                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\"></a>");
+                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\" "+imgStyle+" ></a>");
                 }
                 
                 theMatcher = thePattern.matcher(rawdata);
@@ -373,9 +374,11 @@ public class damnProtocol {
         }
         
         
-        // http://a.deviantart.com/avatars/i/g/igy.gif
-        // &avatar/tspappara/t1/t
+        // http://a.deviantart.com/avatars/h/y/hyperballad22.jpg
+        // &avatar(t)hyperballad22(t)2(t)
         
+        // http://e.deviantart.com/emoticons/c/cheese.gif
+        // &code/tsilly cheese&/code/t
         
         // Anchor
         // &a/thttp://photography.deviantart.com/t/tphotography.deviantart.com&/a
