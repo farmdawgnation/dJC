@@ -159,7 +159,7 @@ public class damnChatPage implements ActionListener {
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
         try {
             String highLight = "";
-            if(user.toLowerCase().contains(dP.getUser().toLowerCase())) highLight = "bgcolor=\"#BBC2BB\"";
+            if(message.toLowerCase().contains(dP.getUser().toLowerCase())) highLight = "bgcolor=\"#BBC2BB\"";
             
             String style = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr "+highLight+"><td valign=\"middle\" nowrap>";
             String styleEnd = "</table>";
