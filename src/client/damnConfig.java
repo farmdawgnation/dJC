@@ -194,7 +194,7 @@ public class damnConfig {
         NamedNodeMap attributes = configNode.getAttributes();
         
         _user = attributes.getNamedItem("user").getNodeValue();
-        _password = attributes.getNamedItem("password").getNodeValue();
+        _password = Crypto.decrypt(attributes.getNamedItem("password").getNodeValue());
         _host = attributes.getNamedItem("host").getNodeValue();
         String port = attributes.getNamedItem("port").getNodeValue();
         try {
@@ -223,7 +223,7 @@ public class damnConfig {
         
         Element connection_elem = reqDoc.createElement("connection");
         connection_elem.setAttribute("user", _user);
-        connection_elem.setAttribute("password", _password);
+        connection_elem.setAttribute("password", Crypto.encrypt(_password));
         connection_elem.setAttribute("host", _host);
         connection_elem.setAttribute("port", Integer.toString(_port));
         
