@@ -31,7 +31,7 @@ public class damnChatPage implements ActionListener {
     private ArrayList<String> channelList;
     private damnProtocol dP;
     private damnApp dJ;
-    
+
     /**
      * Initilizes an instance of damnChatPage.
      * @param app A reference to the damnApp object.
@@ -58,10 +58,13 @@ public class damnChatPage implements ActionListener {
         chatPage.setName("#" + chatname);
         
         JEditorPane chatTerminal = new JEditorPane();
+
+        
         //chatTerminal.setLineWrap(true);
         chatTerminal.setEditable(false);
         chatTerminal.setContentType("text/html");
-        chatTerminal.setText("<html><body>  </body></html>");
+        chatTerminal.setText("<html><head><style type=\"text/css\">\n a { color:#222222 } \n td.tn { margin-right:2px; margin-left: 2px; margin-top:2px; margin-bottom:2px; background-color: #555555} </style>"+
+                "</head><body></body></html>");
         JScrollPane chatScrollPane = new JScrollPane(chatTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         chatScrollPane.setAutoscrolls(true);
         chatPage.add(chatScrollPane, BorderLayout.CENTER);
@@ -154,20 +157,20 @@ public class damnChatPage implements ActionListener {
      */
     public synchronized void echoChat(String channel, String user, String message) {
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
-        
-        HTMLEditorKit ht = (HTMLEditorKit) chatTerminal.getEditorKit();
         try {
-            if(message.contains(dP.getUser())) {
-                insertHTML(chatTerminal, "<div style=\"background-color:#BBC2BB\">&lt;" + user + "&gt; " +message+"</div>", chatTerminal.getDocument().getLength());
-            } else {
-                insertHTML(chatTerminal, "<div>&lt;" + user + "&gt; " +message+"</div>", chatTerminal.getDocument().getLength());
-            }
+            String highLight = "";
+            if(user.toLowerCase().contains(dP.getUser().toLowerCase())) highLight = "bgcolor=\"#BBC2BB\"";
+            
+            String style = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr "+highLight+"><td valign=\"middle\">";
+            String styleEnd = "</table>";
+
+            insertHTML(chatTerminal, style+"&lt;<B>"+ user + "</B>&gt;&nbsp;<td valign=\"middle\">" +message+ styleEnd, chatTerminal.getDocument().getLength());
         } catch (Exception e) {
             e.printStackTrace();
         }
         
         chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
-        chatTerminal.invalidate();
+//        chatTerminal.invalidate();
 
     }
     
@@ -179,18 +182,19 @@ public class damnChatPage implements ActionListener {
      */
     public synchronized void echoChat(String channel, String message) {
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
-        HTMLEditorKit ht = (HTMLEditorKit) chatTerminal.getEditorKit();
         try {
-            if(message.contains(dP.getUser())) {
-                insertHTML(chatTerminal, "<div style=\"background-color:#BBC2BB\">" + message + "</div>", chatTerminal.getDocument().getLength());
-            } else {
-                insertHTML(chatTerminal, "<div>" + message + "</div>", chatTerminal.getDocument().getLength());
-            }
+            String highLight = "";
+            if(message.toLowerCase().contains(dP.getUser().toLowerCase())) highLight =  "bgcolor=\"#BBC2BB\"";
+
+            String style = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr "+highLight+"><td valign=\"middle\">";
+            String styleEnd = "</table>";
+
+            insertHTML(chatTerminal, style+message+styleEnd, chatTerminal.getDocument().getLength());
         } catch (Exception e) {
             e.printStackTrace();
         }
         chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
-        chatTerminal.invalidate();
+//        chatTerminal.invalidate();
         
     }
     
