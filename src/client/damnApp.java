@@ -300,7 +300,7 @@ public class damnApp implements ActionListener {
         JScrollPane serverScrollPane = new JScrollPane(serverTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         serverPage.add(serverScrollPane, BorderLayout.CENTER);
         
-        serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.2.2\n©2005 The dAmn Java Project\nType '/about' for more info.'\n");
+        serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.3\n©2005 The dAmn Java Project\nType '/about' for more info.'\n");
         
         serverCommandField = new JTextField(20);
         serverCommandField.addActionListener(this);
