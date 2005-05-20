@@ -169,7 +169,7 @@ public class damnProtocol {
                     dJ.createChat(linea[1]);
                     dJ.terminalEcho(0, "Successfully joined #" + linea[1]);
                 } else if(lineb[1].equalsIgnoreCase("chatroom doesn't exist")) {
-                    dJ.terminalEcho(0, "Chat room #" + linea[1] + " does not exist.");
+                    dJ.terminalEcho(0, "Chat room does not exist.");
                 }
             } else if(tmpBox[0].startsWith("part chat:")) {
                 String linea[] = tmpBox[0].split(":");
