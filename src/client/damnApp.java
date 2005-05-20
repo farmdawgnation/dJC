@@ -9,9 +9,8 @@ package client;
  * If you do not agree with the terms of this license then please erase all copies
  * of this program and it's source. Thank you.
  */
+
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 
 /**
  * The main application class.
@@ -47,12 +46,16 @@ public class damnApp {
      * @param data The actual information.
      */
     public synchronized void terminalEcho(int type, String data) {
-        if(type == 0) {
-            dJgui.getServerTerminal().append("*** " + data + "\n");
-        } else if(type == 1) {
-            dJgui.getServerTerminal().append(">>> " + data + "\n");
-        } else if(type == 2) {
-            dJgui.getServerTerminal().append("<<< " + data + "\n");
+        switch (type) {
+            case 0:
+                dJgui.getServerTerminal().append("*** " + data + "\n");
+                break;
+            case 1:
+                dJgui.getServerTerminal().append(">>> " + data + "\n");
+                break;
+            case 2:
+                dJgui.getServerTerminal().append("<<< " + data + "\n");
+                break;
         }
     }
     
@@ -123,13 +126,6 @@ public class damnApp {
     }
     
     /**
-     * Forwards messages to damnAppGUI handler.
-     */
-    public void actionPerformed(ActionEvent e) {
-        dJgui.actionPerformed(e);
-    }
-    
-    /**
      * Connects to dAmn with the specified username and password.
      * @param username The username to connect with, if none is specified the data from the config file will be used.
      * @param password The password to connect with.
@@ -185,8 +181,7 @@ public class damnApp {
     /**
      * This function tells the properties system to show up.
      */
-    public void showProperties()
-    {
+    public void showProperties() {
         prop.showProperties();
     }
     
