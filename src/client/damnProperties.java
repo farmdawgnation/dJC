@@ -138,9 +138,11 @@ public class damnProperties implements ActionListener {
             conf.setPassword(passwordField.getText());
             
             conf.clearChannels();
-            String[] channels = autojoinField.getText().replaceAll(" ", "").split(",");
-            for(int i=0;i < channels.length;i++) {
-                conf.addChannel(channels[i]);
+            if(autojoinField.getText() != "") {
+                String[] channels = autojoinField.getText().replaceAll(" ", "").split(",");
+                for(int i=0;i < channels.length;i++) {
+                    conf.addChannel(channels[i]);
+                }
             }
             
             try {
