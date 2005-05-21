@@ -95,8 +95,8 @@ public class damnApp {
      */
     public int searchList(String chatname, String username) {
         DefaultListModel list = dCP.getMemberList(chatname);
-        for(int i=0;i < list.size(); i++) {
-            if(list.get(i).equals(username)) {
+        for (int i=0; i < list.size(); i++) {
+            if (list.get(i).equals(username)) {
                 return i;
             }
         }
@@ -114,6 +114,13 @@ public class damnApp {
      */
     public synchronized void echoChat(String chatname, String user, String message) {
         dCP.echoChat(chatname, user, message);
+    }
+    
+    /**
+     * Forwards messages to damnAppGUI handler.
+     */
+    public void actionPerformed(java.awt.event.ActionEvent e) {
+        dJgui.actionPerformed(e);
     }
     
     /**
@@ -229,15 +236,11 @@ public class damnApp {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (Exception e) { }
-                damnApp dJ = new damnApp();
-                dJ.go();
-            }
-        });
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) { }
+        damnApp dJ = new damnApp();
+        dJ.go();
     }
     
 }
