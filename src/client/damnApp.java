@@ -120,7 +120,7 @@ public class damnApp {
      * Forwards messages to damnAppGUI handler.
      */
     public void actionPerformed(java.awt.event.ActionEvent e) {
-        dJgui.actionPerformed(e);
+        dJgui.doServerCommand(e);
     }
     
     /**
@@ -227,8 +227,6 @@ public class damnApp {
         } catch (java.io.FileNotFoundException ex) {
             ex.printStackTrace();
         }
-        
-        dJgui.damnShowInterface();
     }
     
     /**
