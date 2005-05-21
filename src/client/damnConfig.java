@@ -37,7 +37,7 @@ import org.w3c.dom.NodeList;
  *
  * @author Eric Olander
  */
-public class damnConfig {
+public final class damnConfig {
     
     private static final String CONFIG_FILE = "config.xml";
     
@@ -145,6 +145,9 @@ public class damnConfig {
      * @param channel Channel to be added
      */
     public void addChannel(String channel) {
+        if ((channel == null) || (channel.length() == 0)) {
+            return;
+        }
         _channels.add(channel);
     }
     
