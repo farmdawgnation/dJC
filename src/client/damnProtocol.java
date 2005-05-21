@@ -4,7 +4,7 @@ package client;
  * damnProtocol.java
  * ©2005 The dAmn Java Project
  *
- * This software and it's source code are distributed under the terms and conditions of the GNU
+ * This software and its source code are distributed under the terms and conditions of the GNU
  * General Public License, Version 2. A copy of this license has been provided.
  * If you do not agree with the terms of this license then please erase all copies
  * of this program and it's source. Thank you.
@@ -145,21 +145,25 @@ public class damnProtocol {
                     dJ.echoChat(infotext[1], "*** " + fromtext[1] + " " + tmpBox[5]);
                 } else if(tmpBox[2].startsWith("join ")) {
                     String[] whoisit = tmpBox[2].split(" ");
-                    String[] symbol = tmpBox[7].split("=");
+                    String[] privclass = tmpBox[5].split("=");
+                    String[] symbol = tmpBox[7].split("=", 2);
                     String[] infotext= tmpBox[0].split(":");
                     dJ.echoChat(infotext[1], "*** " + whoisit[1] + " has joined.");
-                    dJ.getChatMemberList(infotext[1]).addElement(whoisit[1]);
+                    dJ.getChatMemberList(infotext[1]).addUser(whoisit[1], symbol[1], privclass[1]);
+                    dJ.getChatMemberList(infotext[1]).generateHtml();
                 } else if(tmpBox[2].startsWith("part ")) {
                     String[] whoisit = tmpBox[2].split(" ");
                     String[] infotext= tmpBox[0].split(":");
                     dJ.echoChat(infotext[1], "*** " + whoisit[1] + " has left.");
-                    dJ.getChatMemberList(infotext[1]).remove(dJ.searchList(infotext[1], whoisit[1]));
+                    dJ.getChatMemberList(infotext[1]).delUser(whoisit[1]);
+                    dJ.getChatMemberList(infotext[1]).generateHtml();
                 } else if(tmpBox[2].startsWith("kicked ")) {
                     String[] whoisit = tmpBox[2].split(" ");
                     String[] kicker = tmpBox[3].split("=");
                     String[] infotext = tmpBox[0].split(":");
                     dJ.echoChat(infotext[1], "*** " + whoisit[1] + "has been kicked by " + kicker[1] + " ** " + tmpBox[6]);
-                    dJ.getChatMemberList(infotext[1]).remove(dJ.searchList(infotext[1], whoisit[1]));
+                    dJ.getChatMemberList(infotext[1]).delUser(whoisit[1]);
+                    dJ.getChatMemberList(infotext[1]).generateHtml();
                 }
             } else if(tmpBox[0].startsWith("join chat:")) {
                 String linea[] = tmpBox[0].split(":");
@@ -190,7 +194,17 @@ public class damnProtocol {
                     for(int i=1; i<propertysplit.length; i++) {
                         String[] dataSplit = propertysplit[i].split("\n");
                         String[] linec = dataSplit[0].split(" ");
-                        dJ.getChatMemberList(linea[1]).addElement(linec[1]);
+                        String[] privclass = dataSplit[1].split("=");
+                        String[] symbol = dataSplit[3].split("=", 2);
+                        dJ.getChatMemberList(linea[1]).addUser(linec[1], symbol[1], privclass[1]);
+                        dJ.getChatMemberList(linea[1]).generateHtml();
+                    }
+                } else if(lineb[1].equalsIgnoreCase("privclasses")) {
+                    String[] propertysplit = data.split("\n\n");
+                    String[] privclasses = propertysplit[1].split("\n");
+                    for(int i=0;i < privclasses.length; i++) {
+                        String[] classdata = privclasses[i].split(":");
+                        dJ.getChatMemberList(linea[1]).addPc(classdata[1]);
                     }
                 } else if(lineb[1].equalsIgnoreCase("topic")) {
                     if(tmpBox.length >= 5) {
