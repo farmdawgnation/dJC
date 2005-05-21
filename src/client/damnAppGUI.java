@@ -3,10 +3,10 @@
  * damnAppGUI.java
  * ©2005 The dAmn Java Project
  *
- * This software and it's source code are distributed under the terms and conditions of the GNU
+ * This software and its source code are distributed under the terms and conditions of the GNU
  * General Public License, Version 2. A copy of this license has been provided.
  * If you do not agree with the terms of this license then please erase all copies
- * of this program and it's source. Thank you.
+ * of this program and its source. Thank you.
  */
 
 package client;
@@ -19,13 +19,12 @@ import java.awt.event.*;
  * This is the application GUI Class.
  * @author MSF
  */
-public class damnAppGUI implements ActionListener {
+public class damnAppGUI extends JFrame {
     private damnApp dJ;
     private damnChatPage dCP;
     private JTabbedPane tabbedPane;
     private JPanel serverPage;
     private JTextArea serverTerminal;
-    private JFrame frame;
     private JTextField serverCommandField;
     
     private JMenuBar menuBar;
@@ -44,14 +43,15 @@ public class damnAppGUI implements ActionListener {
     public damnAppGUI(damnApp appObj, damnChatPage chtPageObj) {
         dJ = appObj;
         dCP = chtPageObj;
+        damnShowInterface();
     }
     
     /**
      * Constructs and shows the interface for the application.
      */
-    public void damnShowInterface() {
-        frame = new JFrame("dJC: The dAmn Java Client");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    private void damnShowInterface() {
+        setTitle("dJC: The dAmn Java Client");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         menuBar = new JMenuBar();
         
@@ -65,14 +65,26 @@ public class damnAppGUI implements ActionListener {
         
         //File Menu Items
         connectItem = new JMenuItem("Connect");
-        connectItem.addActionListener(this);
+        connectItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                doConnect();
+            }
+        });
         fileMenu.add(connectItem);
         disconnectItem = new JMenuItem("Disconnect");
-        disconnectItem.addActionListener(this);
+        disconnectItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                doDisconnect();
+            }
+        });
         disconnectItem.setEnabled(false);
         fileMenu.add(disconnectItem);
         preferencesItem = new JMenuItem("Preferences");
-        preferencesItem.addActionListener(this);
+        preferencesItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                dJ.showProperties();
+            }
+        });
         fileMenu.add(preferencesItem);
         exitItem = new JMenuItem("Exit");
         fileMenu.add(exitItem);
@@ -82,7 +94,7 @@ public class damnAppGUI implements ActionListener {
         helpMenu.add(aboutItem);
         
         //Set the Menu Bar
-        frame.setJMenuBar(menuBar);
+        setJMenuBar(menuBar);
         
         tabbedPane = new JTabbedPane();
         tabbedPane.setPreferredSize(new java.awt.Dimension(800, 600));
@@ -98,39 +110,30 @@ public class damnAppGUI implements ActionListener {
         serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.3\n©2005 The dAmn Java Project\nType '/about' for more info.'\n");
         
         serverCommandField = new JTextField(20);
-        serverCommandField.addActionListener(this);
+        serverCommandField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                doServerCommand(evt);
+            }
+        });
         serverPage.add(serverCommandField, BorderLayout.PAGE_END);
         
         tabbedPane.add(serverPage);
         
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(tabbedPane, BorderLayout.CENTER);
-        frame.getContentPane().add(panel);
+        getContentPane().add(panel);
         
-        frame.pack();
-        frame.setVisible(true);
+        pack();
+        setVisible(true);
     }
     
     /**
-     * Action handler.
      * This function decides what to do when the user types a server command.
      */
-    public void actionPerformed(java.awt.event.ActionEvent e) {
+    public void doServerCommand(ActionEvent e) {
         String parts[];
         if(e.getSource() == serverCommandField) {
             parts = serverCommandField.getText().split(" ");
-        } else if(e.getSource() == preferencesItem) {
-            dJ.showProperties();
-            return;
-        } else if(e.getSource() == connectItem) {
-            dJ.connectUserPass("", "");
-            connectItem.setEnabled(false);
-            disconnectItem.setEnabled(true);
-            return;
-        } else if(e.getSource() == disconnectItem) {
-            connectItem.setEnabled(true);
-            disconnectItem.setEnabled(false);
-            return;
         } else {
             JTextField txtfld = dCP.chatFields.get(dCP.chatFields.indexOf(e.getSource()));
             parts = txtfld.getText().split(" ");
@@ -172,6 +175,23 @@ public class damnAppGUI implements ActionListener {
             dJ.terminalEcho(0, "Unknown Command.");
         }
         serverCommandField.setText("");
+    }
+    
+    /**
+     * Handle connect 
+     */
+    private void doConnect() {
+        dJ.connectUserPass("", "");
+        connectItem.setEnabled(false);
+        disconnectItem.setEnabled(true);
+    }
+    
+    /**
+     * Handle disconnect 
+     */
+    private void doDisconnect() {
+        connectItem.setEnabled(true);
+        disconnectItem.setEnabled(false);
     }
     
     /**
