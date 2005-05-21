@@ -27,8 +27,9 @@ public class damnChatPage implements ActionListener {
     private ArrayList<JEditorPane> chatTerminals;
     private ArrayList<JScrollPane> chatScrollPanes;
     ArrayList<JTextField> chatFields;
-    private ArrayList<DefaultListModel> chatMemberLists;
+    //private ArrayList<DefaultListModel> chatMemberLists;
     private ArrayList<String> channelList;
+    private ArrayList<damnChatMemberList> chatMemberLists;
     private damnProtocol dP;
     private damnApp dJ;
 
@@ -45,7 +46,7 @@ public class damnChatPage implements ActionListener {
         chatScrollPanes = new ArrayList<JScrollPane>();
         chatFields = new ArrayList<JTextField>();
         channelList = new ArrayList<String>();
-        chatMemberLists = new ArrayList<DefaultListModel>();
+        chatMemberLists = new ArrayList<damnChatMemberList>();
     }
     
     /**
@@ -73,8 +74,8 @@ public class damnChatPage implements ActionListener {
         chatField.addActionListener(this);
         chatPage.add(chatField, BorderLayout.PAGE_END);
         
-        DefaultListModel chatMemberList = new DefaultListModel();
-        JList memberList = new JList(chatMemberList);
+        damnChatMemberList memberList = new damnChatMemberList();
+        memberList.generateHtml();
         JScrollPane memberListScrollPane = new JScrollPane(memberList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         chatPage.add(memberListScrollPane, BorderLayout.LINE_END);
         
@@ -84,7 +85,7 @@ public class damnChatPage implements ActionListener {
         chatTerminals.add(chatTerminal);
         chatScrollPanes.add(chatScrollPane);
         chatFields.add(chatField);
-        chatMemberLists.add(chatMemberList);
+        chatMemberLists.add(memberList);
         channelList.add(chatname);
     }
     
@@ -220,7 +221,7 @@ public class damnChatPage implements ActionListener {
      * @param channel The channel to locate a list for.
      * @return A DefaultListModel object for the member list.
      */
-    public DefaultListModel getMemberList(String channel) {
+    public damnChatMemberList getMemberList(String channel) {
         return chatMemberLists.get(findPages(channel));
     }
 }
