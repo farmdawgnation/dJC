@@ -4,7 +4,7 @@ package client;
  * damnApp.java
  * ©2005 The dAmn Java Project
  *
- * This software and it's source code are distributed under the terms and conditions of the GNU
+ * This software and its source code are distributed under the terms and conditions of the GNU
  * General Public License, Version 2. A copy of this license has been provided.
  * If you do not agree with the terms of this license then please erase all copies
  * of this program and it's source. Thank you.
@@ -82,27 +82,8 @@ public class damnApp {
      * @param chatname The name of the channel.
      * @return A DefaultListModel object which is the model for the member list.
      */
-    public DefaultListModel getChatMemberList(String chatname) {
+    public damnChatMemberList getChatMemberList(String chatname) {
         return dCP.getMemberList(chatname);
-    }
-    
-    /**
-     * Searches for the index number of a specified member in a chat room.
-     * Used for removing members from the list if they've left the room.
-     * @param chatname The name of the channel where the member should be.
-     * @param username The username to look for.
-     * @return The index of the member that you're looking for. It will give a -1 if no such member was found.
-     */
-    public int searchList(String chatname, String username) {
-        DefaultListModel list = dCP.getMemberList(chatname);
-        for (int i=0; i < list.size(); i++) {
-            if (list.get(i).equals(username)) {
-                return i;
-            }
-        }
-        
-        System.out.println("searchList() Fail!");
-        return -1;
     }
     
     /**
