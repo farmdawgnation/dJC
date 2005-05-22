@@ -342,13 +342,9 @@ public class damnProtocol {
         Pattern thePattern;
         Matcher theMatcher;
         String imgStyle = "";
-
-/*        PrintWriter out, out2;
-        try {
-        out = new PrintWriter(new FileWriter("out.txt", true));
-        out2 = new PrintWriter(new FileWriter("out2.txt", true));
-        out.println( rawdata.replaceAll("\t", "/t") );*/
         
+        String oldData = rawdata;
+
         
         // Emoticons
         if(rawdata.contains("&emote\t")) {
@@ -377,69 +373,87 @@ public class damnProtocol {
                     if (Width>Height) { nw = 100;  nh = 100 * Height / Width; }
                     else { nh = 100; nw = 100 * Width / Height; }
                     String link = "<a href=\"www.deviantart.com/view/$1\">";
-                    rawdata = theMatcher.replaceFirst("<td class=\"tn\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\" "+imgStyle+"></td>");
+                    rawdata = theMatcher.replaceFirst("<td class=\"tn\"><a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\" "+imgStyle+"></a></td>");
                 } else {
                     rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\" "+imgStyle+" ></a>");
                 }
                 
                 theMatcher = thePattern.matcher(rawdata);
-       
             }
         }
         
         
-        // http://a.deviantart.com/avatars/h/y/hyperballad22.jpg
-        // &avatar(t)hyperballad22(t)2(t)
+        if (rawdata.contains("&avatar\t")) {
+            dJ.terminalEcho(0, rawdata);
+            thePattern = Pattern.compile("&avatar\t([^\t]+)\t(\\d+)\t");
+            theMatcher = thePattern.matcher(rawdata);
+            while (theMatcher.find()) {
+                String name = theMatcher.group(1).toLowerCase();
+                String[] types = {"gif","gif","jpg"};
+                int type = Integer.parseInt(theMatcher.group(2));
+                if (type > 0)
+                    rawdata = theMatcher.replaceAll("<a href=\""+name+"\"><img src=\"http://a.deviantart.com/avatars/"+name.charAt(0)+"/"+name.charAt(1)+"/"+name+"."+types[type]+"\"></a>");
+                else
+                    rawdata = theMatcher.replaceAll("<img src=\"http://a.deviantart.com/avatars/default.gif\">");
+            }
+        }
         
         // http://e.deviantart.com/emoticons/c/cheese.gif
         // &code/tsilly cheese&/code/t
         
         // Anchor
         // &a/thttp://photography.deviantart.com/t/tphotography.deviantart.com&/a
-        if(rawdata.contains("&a\t")) {
-            thePattern = Pattern.compile("&a\t([^\t]*?)\t([^\t]*?)\t([^&]*?)&/a\t");
-            theMatcher = thePattern.matcher(rawdata);
-            rawdata = theMatcher.replaceAll("<a href=\"$1\" alt=\"$3\">$2$3</a>");
-        }
-
+        
+        if(rawdata.contains("&a\t")) 
+            rawdata = rawdata.replaceAll("&a\t([^\t]+)\t([^\t]*)\t([^&]*?)&/a\t",  "<a href=\"$1\" title=\"$2\">$2$3</a>");
+        
         // Links
         if(rawdata.contains("&link\t")) {
-            thePattern = Pattern.compile("&link\t([^\t]+)\t([^\t]+)\t(&(\t))*");
-            theMatcher = thePattern.matcher(rawdata);
-            rawdata = theMatcher.replaceAll("<a href=\"$1\">[link]</a>");
-        }
-       
+            // link no description
+            rawdata = rawdata.replaceAll("&link\t([^\t]+)\t&\t","<a href=\"$1\" title=\"$1\">[link]</a>");
+            // link with description
+            rawdata = rawdata.replaceAll("&link\t([^\t]+)\t([^\t]+)\t&\t","<a href=\"$1\" title=\"$1\">$2</a>");         
+       }
+        
         //Formatting
-        thePattern = Pattern.compile("&([a-zA-Z])\t(.*?)&/\\1\t");
-        theMatcher = thePattern.matcher(rawdata);
-        rawdata = theMatcher.replaceAll("<$1>$2</$1>");
+        rawdata = rawdata.replaceAll("&([biu])\t", "<$1>");
+        rawdata = rawdata.replaceAll("&/([biu])\t", "</$1>");
         
-        // <BR>
-        thePattern = Pattern.compile("&([bB][rR])\t");
-        theMatcher = thePattern.matcher(rawdata);
-        rawdata = theMatcher.replaceAll("<$1>");
-
-        if(rawdata.contains("&sub\t")) {
-            thePattern = Pattern.compile("&sub\t(.*?)&/sub\t");
-            theMatcher = thePattern.matcher(rawdata);
-            rawdata = theMatcher.replaceAll("<font size=\"-1\">$1</font>");
-        }
-       
+        rawdata = rawdata.replace("&sub\t","<sub>");
+        rawdata = rawdata.replace("&/sub\t","</sub>");
+        // superscript
+        rawdata = rawdata.replace("&sup\t","<sup>");
+        rawdata = rawdata.replace("&/sup\t","</sup>");
+        // strike
+        rawdata = rawdata.replace("&s\t","<del>");
+        rawdata = rawdata.replace("&/s\t","</del>");
+        // paragraph
+        rawdata = rawdata.replace("&p\t","<p>");
+        rawdata = rawdata.replace("&/p\t","</p>");
+        // break
+        rawdata = rawdata.replace("&br\t","<br>");
+        // code
+        rawdata = rawdata.replace("&code\t","<code>");
+        rawdata = rawdata.replace("&/code\t","</code>");
+        // bcode
+        rawdata = rawdata.replace("&bcode\t","<pre><code>");
+        rawdata = rawdata.replace("&/bcode\t","</code></pre>");
+        //li
+        rawdata = rawdata.replace("&li\t","<li>");
+        rawdata = rawdata.replace("&/li\t","</li>");
+        //ul
+        rawdata = rawdata.replace("&ul\t","<ul>");
+        rawdata = rawdata.replace("&/ul\t","</ul>");
+        //ol
+        rawdata = rawdata.replace("&ol\t","<ol>");
+        rawdata = rawdata.replace("&/ol\t","</ol>");
+        
         //:dev...:
-        //&dev(t)+(t)faq(t)
-        if(rawdata.contains("&dev")) {
-            thePattern = Pattern.compile("&dev\t([~!@$+%^*`'=])\t([A-Za-z0-9\\-]+)\t");
-            theMatcher = thePattern.matcher(rawdata);
-            rawdata = theMatcher.replaceAll("<a href=\"http://$2.deviantart.com\">$1$2</a>");
-        }
+        if(rawdata.contains("&dev")) rawdata = rawdata.replaceAll("&dev\t([^\t])\t([^\t]+)\t",
+                "<a href=\"http://$2.deviantart.com\">$1$2</a>");
         
-        rawdata = rawdata.replaceAll("\t", "/t");
+        rawdata = rawdata.replaceAll("\t", "(t)");
 
-/*        out2.println( rawdata );
-        out.close();
-        out2.close();
-        } catch (Exception e) {};*/
-        
         return rawdata;
     }
 }
