@@ -384,7 +384,6 @@ public class damnProtocol {
         
         
         if (rawdata.contains("&avatar\t")) {
-            dJ.terminalEcho(0, rawdata);
             thePattern = Pattern.compile("&avatar\t([^\t]+)\t(\\d+)\t");
             theMatcher = thePattern.matcher(rawdata);
             while (theMatcher.find()) {
