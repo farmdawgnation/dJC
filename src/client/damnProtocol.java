@@ -2,7 +2,7 @@ package client;
 /*
  * dJC: The dAmn Java Client
  * damnProtocol.java
- * ©2005 The dAmn Java Project
+ * ?2005 The dAmn Java Project
  *
  * This software and its source code are distributed under the terms and conditions of the GNU
  * General Public License, Version 2. A copy of this license has been provided.
@@ -341,10 +341,6 @@ public class damnProtocol {
     private String processTablumps(String rawdata) {
         Pattern thePattern;
         Matcher theMatcher;
-        String imgStyle = "";
-        
-        String oldData = rawdata;
-
         
         // Emoticons
         if(rawdata.contains("&emote\t")) {
@@ -373,9 +369,9 @@ public class damnProtocol {
                     if (Width>Height) { nw = 100;  nh = 100 * Height / Width; }
                     else { nh = 100; nw = 100 * Width / Height; }
                     String link = "<a href=\"www.deviantart.com/view/$1\">";
-                    rawdata = theMatcher.replaceFirst("<td class=\"tn\"><a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\" "+imgStyle+"></a></td>");
+                    rawdata = theMatcher.replaceFirst("<td class=\"tn\"><a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\" ></a></td>");
                 } else {
-                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\" "+imgStyle+" ></a>");
+                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\"></a>");
                 }
                 
                 theMatcher = thePattern.matcher(rawdata);
@@ -396,10 +392,7 @@ public class damnProtocol {
                     rawdata = theMatcher.replaceAll("<img src=\"http://a.deviantart.com/avatars/default.gif\">");
             }
         }
-        
-        // http://e.deviantart.com/emoticons/c/cheese.gif
-        // &code/tsilly cheese&/code/t
-        
+      
         // Anchor
         // &a/thttp://photography.deviantart.com/t/tphotography.deviantart.com&/a
         
