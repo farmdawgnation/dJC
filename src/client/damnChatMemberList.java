@@ -89,21 +89,21 @@ public class damnChatMemberList extends JEditorPane {
      * Generates the HTML for the member list.
      */
     public void generateHtml() {
-        String code = new String("<html><body><table width=\"100%\">");
+        StringBuffer code = new StringBuffer("<html><body><table width=\"100%\">");
         
         for(int a=0;a < privclasses.size(); a++) {
             if(classHasMembers(privclasses.get(a))) {
-                code += "<tr><th align=\"left\">" + privclasses.get(a) + "</th></tr>";
+                code.append("<tr><th align=\"left\">" + privclasses.get(a) + "</th></tr>");
                 for(int i=0;i < users.size();i++) {
                     if(users.get(i).getPc().equalsIgnoreCase(privclasses.get(a))) {
-                        code += "<tr><td>" + users.get(i).getFormatted() + "</td></tr>";
+                        code.append("<tr><td>" + users.get(i).getFormatted() + "</td></tr>");
                     }
                 }
             }
         }
         
-        code += "</table></body></html>";
+        code.append("</table></body></html>");
         
-        setText(code);
+        setText(code.toString());
     }
 }

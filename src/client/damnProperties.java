@@ -116,16 +116,16 @@ public class damnProperties implements ActionListener {
         portField.setText(String.format("%d", conf.getPort()));
         
         String[] channels = conf.getChannels();
-        String autojoinval = new String();
+        StringBuffer autojoinval = new StringBuffer();
         for(int i=0; i<channels.length; i++) {
             if(i == 0) {
-                autojoinval = channels[i];
+                autojoinval.append(channels[i]);
             } else {
-                autojoinval += "," + channels[i];
+                autojoinval.append("," + channels[i]);
             }
         }
         
-        autojoinField.setText(autojoinval);
+        autojoinField.setText(autojoinval.toString());
         
         frame.setVisible(true);
     }

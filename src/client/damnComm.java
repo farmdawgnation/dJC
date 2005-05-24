@@ -26,7 +26,6 @@ public class damnComm implements Runnable {
     private String host;
     private int port;
     private int commActive = 0;
-    private String message;
     private int dataa;
     
     /**
@@ -60,20 +59,16 @@ public class damnComm implements Runnable {
             dP.doHandshake();
             
             while(commActive == 1) {
+                StringBuffer message = new StringBuffer();
                 while((dataa = reader.read()) != -1) {
                     //System.out.println(message);
                     if((char)dataa != '\0') {
-                        if(message != null) {
-                            message += (char)dataa;
-                        } else {
-                            message = message.format("%c", dataa);
-                        }
+                        message.append((char)dataa);
                     } else {
                         break;
                     }
                 }
-                dP.handleMessage(message, this);
-                message = null;
+                dP.handleMessage(message.toString(), this);
             }
             
             sock.close();
