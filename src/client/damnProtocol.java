@@ -390,6 +390,8 @@ public class damnProtocol {
                     rawdata = theMatcher.replaceAll("<a href=\""+name+"\"><img src=\"http://a.deviantart.com/avatars/"+name.charAt(0)+"/"+name.charAt(1)+"/"+name+"."+types[type]+"\"></a>");
                 else
                     rawdata = theMatcher.replaceAll("<img src=\"http://a.deviantart.com/avatars/default.gif\">");
+                
+                theMatcher = thePattern.matcher(rawdata);
             }
         }
       
