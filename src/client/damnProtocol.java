@@ -82,22 +82,22 @@ public class damnProtocol {
      */
     private String buildPacket(int termnewline, String command, String ... args) {
         //TODO: Write buildPacket() method.
-        String data;
+        StringBuffer data;
         
-        data = command + '\n';
+        data = new StringBuffer(command + '\n');
         
-        for(int i=0;i<args.length;i++) {
+        for (int i=0; i<args.length; i++) {
             //Append args
-            data += args[i];
+            data.append(args[i]);
             if(i == args.length && termnewline == 1) {
-                data += '\n';
+                data.append('\n');
             } else if(i != args.length) {
-                data += '\n';
+                data.append('\n');
             }
         }
         
-        data += '\0';
-        return data;
+        data.append('\0');
+        return data.toString();
     }
     
     /**
