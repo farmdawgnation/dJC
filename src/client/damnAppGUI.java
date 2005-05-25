@@ -22,6 +22,7 @@ import java.awt.event.*;
 public class damnAppGUI extends JFrame {
     private damnApp dJ;
     private damnChatPage dCP;
+    private AwaySetter aws;
     private JTabbedPane tabbedPane;
     private JPanel serverPage;
     private JTextArea serverTerminal;
@@ -30,11 +31,14 @@ public class damnAppGUI extends JFrame {
     private JMenuBar menuBar;
     private JMenu fileMenu;
     private JMenu helpMenu;
+    private JMenu awayMenu;
     private JMenuItem connectItem;
     private JMenuItem disconnectItem;
     private JMenuItem preferencesItem;
     private JMenuItem exitItem;
     private JMenuItem aboutItem;
+    private JMenuItem goAwayItem;
+    private JMenuItem comeBackItem;
     
     /**
      * Constructs the damnAppGUI Object.
@@ -44,6 +48,7 @@ public class damnAppGUI extends JFrame {
         dJ = appObj;
         dCP = chtPageObj;
         damnShowInterface();
+        aws = new AwaySetter(dCP, this);
     }
     
     /**
@@ -58,6 +63,10 @@ public class damnAppGUI extends JFrame {
         //File Menu
         fileMenu = new JMenu("File");
         menuBar.add(fileMenu);
+        
+        //Away Menu
+        awayMenu = new JMenu("Away");
+        menuBar.add(awayMenu);
         
         //Help Menu
         helpMenu = new JMenu("Help");
@@ -88,6 +97,25 @@ public class damnAppGUI extends JFrame {
         fileMenu.add(preferencesItem);
         exitItem = new JMenuItem("Exit");
         fileMenu.add(exitItem);
+        
+        //Away Menu Items
+        goAwayItem = new JMenuItem("Go Away");
+        goAwayItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                aws.show();
+            }
+        });
+        awayMenu.add(goAwayItem);
+        comeBackItem = new JMenuItem("Come Back");
+        comeBackItem.setEnabled(false);
+        comeBackItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dCP.unsetAway();
+                awayStat(false);
+            }
+        });
+        awayMenu.add(comeBackItem);
+            
         
         //Help Menu Items
         aboutItem = new JMenuItem("About");
@@ -171,6 +199,17 @@ public class damnAppGUI extends JFrame {
             TokenFetcher tf = new TokenFetcher("www.deviantart.com");
 
             dJ.terminalEcho(0, tf.doTokenFetch(parts[1], parts[2]));
+        } else if(parts[0].equalsIgnoreCase("/away")) {
+            String[] peices;
+            if(e.getSource() == serverCommandField) {
+                peices = serverCommandField.getText().split(" ", 2);
+            } else {
+                JTextField txtfld = dCP.chatFields.get(dCP.chatFields.indexOf(e.getSource()));
+                peices = txtfld.getText().split(" ", 2);
+            }
+            dCP.setAway(peices[1]);
+        } else if(parts[0].equalsIgnoreCase("/back")) {
+            dCP.unsetAway();
         } else {
             dJ.terminalEcho(0, "Unknown Command.");
         }
@@ -208,5 +247,19 @@ public class damnAppGUI extends JFrame {
      */
     public JTextArea getServerTerminal() {
         return serverTerminal;
+    }
+    
+    /**
+     * Enable/Disable the Away menu options.
+     * @param away Wether or not to be away.
+     */
+    public void awayStat(boolean away) {
+        if(away) {
+            comeBackItem.setEnabled(true);
+            goAwayItem.setEnabled(false);
+        } else {
+            comeBackItem.setEnabled(false);
+            goAwayItem.setEnabled(true);
+        }
     }
 }
