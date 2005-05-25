@@ -10,10 +10,13 @@ package client;
  * of this program and it's source. Thank you.
  */
 import javax.swing.*;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.lang.*;
+import java.io.IOException;
 import javax.swing.text.Document;
 import javax.swing.text.html.*;
 
@@ -22,16 +25,16 @@ import javax.swing.text.html.*;
  * @version 0.2.2
  * @author MSF
  */
-public class damnChatPage implements ActionListener {
+public class damnChatPage implements ActionListener, HyperlinkListener {
     private ArrayList<JPanel> chatPages;
     private ArrayList<JEditorPane> chatTerminals;
     private ArrayList<JScrollPane> chatScrollPanes;
     ArrayList<JTextField> chatFields;
-    //private ArrayList<DefaultListModel> chatMemberLists;
     private ArrayList<String> channelList;
     private ArrayList<damnChatMemberList> chatMemberLists;
     private damnProtocol dP;
     private damnApp dJ;
+    private String awaymsg;
 
     /**
      * Initilizes an instance of damnChatPage.
@@ -47,6 +50,7 @@ public class damnChatPage implements ActionListener {
         chatFields = new ArrayList<JTextField>();
         channelList = new ArrayList<String>();
         chatMemberLists = new ArrayList<damnChatMemberList>();
+        awaymsg = null;
     }
     
     /**
@@ -66,6 +70,7 @@ public class damnChatPage implements ActionListener {
         chatTerminal.setContentType("text/html");
         chatTerminal.setText("<html><head><style type=\"text/css\">\n a { color:#222222 } \n td.tn { margin-right:2px; margin-left: 2px; margin-top:2px; margin-bottom:2px; } </style>"+
                 "</head><body></body></html>");
+        chatTerminal.addHyperlinkListener(this);
         JScrollPane chatScrollPane = new JScrollPane(chatTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         chatScrollPane.setAutoscrolls(true);
         chatPage.add(chatScrollPane, BorderLayout.CENTER);
@@ -133,7 +138,9 @@ public class damnChatPage implements ActionListener {
                 dP.doSendMessage(chatPage.getName().substring(1), chatField.getText());
             }
         }
-        chatField.setText("");
+        if(!chatField.getText().equalsIgnoreCase("You are away - you must unset away before you can talk.")) {
+            chatField.setText("");
+        }
     }
 
     /**
@@ -162,6 +169,8 @@ public class damnChatPage implements ActionListener {
             String highLight = "";
             if(message.toLowerCase().contains(dP.getUser().toLowerCase())) highLight = "bgcolor=\"#BBC2BB\"";
             
+            if(message.toLowerCase().startsWith(dP.getUser().toLowerCase())) sendAwayAlert(channel);
+            
             String style = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr "+highLight+"><td valign=\"middle\" nowrap>";
             String styleEnd = "</table>";
 
@@ -185,7 +194,10 @@ public class damnChatPage implements ActionListener {
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
         try {
             String highLight = "";
-            if(message.toLowerCase().contains(dP.getUser().toLowerCase())) highLight =  "bgcolor=\"#BBC2BB\"";
+            if(message.toLowerCase().contains(dP.getUser().toLowerCase()) && !message.toLowerCase().startsWith("*** " + dP.getUser().toLowerCase())) {
+                highLight =  "bgcolor=\"#BBC2BB\"";
+                sendAwayAlert(channel);
+            }
 
             String style = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr "+highLight+"><td valign=\"middle\">";
             String styleEnd = "</table>";
@@ -223,5 +235,50 @@ public class damnChatPage implements ActionListener {
      */
     public damnChatMemberList getMemberList(String channel) {
         return chatMemberLists.get(findPages(channel));
+    }
+    
+    /**
+     * Sets the object to away mode.
+     * @param message The away message.
+     */
+    public void setAway(String message) {
+        awaymsg = message;
+        for(int i=0;i <chatFields.size();i++) {
+            chatFields.get(i).setText("You are away - you must unset away before you can talk.");
+            chatFields.get(i).setEditable(false);
+            dP.doSendMessage(chatPages.get(i).getName().substring(1),  "/me is away: " + message);
+        }
+    }
+    
+    /**
+     * Unsets the away mode.
+     */
+    public void unsetAway() {
+        awaymsg = null;
+        for(int i=0;i<chatFields.size();i++) {
+            chatFields.get(i).setText("");
+            chatFields.get(i).setEditable(true);
+            dP.doSendMessage(chatPages.get(i).getName().substring(1), "/me is back.");
+        }
+    }
+    
+    /**
+     * Will send the away alert if the away state is enabled.
+     * @param channel The Channel to send the alert to.
+     */
+    public void sendAwayAlert(String channel) {
+        if(awaymsg != null) {
+            dP.doSendMessage(channel, "/me is away: " + awaymsg);
+        }
+    }
+
+    public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+        if(hyperlinkEvent.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+            /*try {
+                Runtime.getRuntime().exec("config.xml");
+            } catch(IOException e) {
+                e.printStackTrace();
+            }*/
+        }
     }
 }
