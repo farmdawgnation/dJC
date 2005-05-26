@@ -89,8 +89,8 @@ public class damnProtocol {
         for (int i=0; i<args.length; i++) {
             //Append args
             data.append(args[i]);
-            if(i == args.length && termnewline == 1) {
-                data.append('\n');
+            if(i == args.length - 1 && termnewline == 0) {
+                break;
             } else if(i != args.length) {
                 data.append('\n');
             }
@@ -331,6 +331,14 @@ public class damnProtocol {
         dC.writeData(buildPacket(0, "send chat:" + channel, "", "demote "+user, "pc="+privClass));
     }
     
+    /**
+     * Issues an administrative command.
+     * @param channel The channel to send the command to.
+     * @param command The command to send to the channel.
+     */
+    public void doAdmin(String channel, String command) {
+        dC.writeData(buildPacket(0, "send chat:" + channel, "", "admin", "", command));
+    }
     
     
     /**
