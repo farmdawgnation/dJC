@@ -25,7 +25,7 @@ import javax.swing.text.html.*;
  * @version 0.2.2
  * @author MSF
  */
-public class damnChatPage implements ActionListener, HyperlinkListener {
+public class damnChatPage implements ActionListener, HyperlinkListener, KeyListener {
     private ArrayList<JPanel> chatPages;
     private ArrayList<JEditorPane> chatTerminals;
     private ArrayList<JScrollPane> chatScrollPanes;
@@ -77,6 +77,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener {
         
         JTextField chatField = new JTextField(20);
         chatField.addActionListener(this);
+        chatField.addKeyListener(this);
         chatPage.add(chatField, BorderLayout.PAGE_END);
         
         damnChatMemberList memberList = new damnChatMemberList();
@@ -118,7 +119,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener {
         JTextField chatField = chatFields.get(chatFields.indexOf(e.getSource()));
         if(chatField.getText().startsWith("/") && chatField.getText().startsWith("/me ") == false
                 && chatField.getText().startsWith("/topic ") == false && chatField.getText().startsWith("/title ") == false
-                && chatField.getText().startsWith("/kick ") == false) {
+                && chatField.getText().startsWith("/kick ") == false && chatField.getText().startsWith("/admin ") == false) {
             dJ.actionPerformed(e);
         } else {
             if(chatField.getText().startsWith("/topic ") || chatField.getText().startsWith("/title ")) {
@@ -133,6 +134,10 @@ public class damnChatPage implements ActionListener, HyperlinkListener {
                 } else {
                     dP.doKick(channel.substring(1), comparts[1], " ");
                 }
+            } else if(chatField.getText().startsWith("/admin ")) {
+                String channel = chatPages.get(chatFields.indexOf(e.getSource())).getName();
+                String parts[] = chatField.getText().split(" ", 2);
+                dP.doAdmin(channel.substring(1), parts[1]);
             } else {
                 JPanel chatPage = chatPages.get(chatFields.indexOf(e.getSource()));
                 dP.doSendMessage(chatPage.getName().substring(1), chatField.getText());
@@ -279,6 +284,18 @@ public class damnChatPage implements ActionListener, HyperlinkListener {
             } catch(IOException e) {
                 e.printStackTrace();
             }*/
+        }
+    }
+
+    public void keyPressed(KeyEvent keyEvent) {
+    }
+
+    public void keyReleased(KeyEvent keyEvent) {
+    }
+
+    public void keyTyped(KeyEvent keyEvent) {
+        if(keyEvent.getKeyChar() == '\t') {
+            System.out.println("TAB");
         }
     }
 }
