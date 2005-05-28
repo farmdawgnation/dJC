@@ -12,6 +12,8 @@
 package client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import javax.swing.JEditorPane;
 
 /**
@@ -91,12 +93,28 @@ public class damnChatMemberList extends JEditorPane {
     public void generateHtml() {
         StringBuffer code = new StringBuffer("<html><body><table width=\"100%\">");
         
+        Comparator<damnUser> dUc = new Comparator<damnUser>() {
+            public int compare(damnUser usra, damnUser usrb) {
+                if(usra.getPlain().equalsIgnoreCase(usrb.getPlain())) {
+                    return 0;
+                } else if(usra.getPlain().compareToIgnoreCase(usrb.getPlain()) < 0) {
+                    return -1;
+                } else if(usra.getPlain().compareToIgnoreCase(usrb.getPlain()) > 0) {
+                    return 1;
+                }
+                return 0;
+            }
+        };
+        
+        damnUser[] userArr = users.toArray(new damnUser[users.size()]);
+        Arrays.sort(userArr, dUc);
+        
         for(int a=0;a < privclasses.size(); a++) {
             if(classHasMembers(privclasses.get(a))) {
                 code.append("<tr><th align=\"left\">" + privclasses.get(a) + "</th></tr>");
-                for(int i=0;i < users.size();i++) {
-                    if(users.get(i).getPc().equalsIgnoreCase(privclasses.get(a))) {
-                        code.append("<tr><td>" + users.get(i).getFormatted() + "</td></tr>");
+                for(int i=0;i < userArr.length;i++) {
+                    if(userArr[i].getPc().equalsIgnoreCase(privclasses.get(a))) {
+                        code.append("<tr><td>" + userArr[i].getFormatted() + "</td></tr>");
                     }
                 }
             }
@@ -105,5 +123,19 @@ public class damnChatMemberList extends JEditorPane {
         code.append("</table></body></html>");
         
         setText(code.toString());
+    }
+    
+    /**
+     * Clears the privclass list.
+     */
+    public void clearPcl() {
+        privclasses.clear();
+    }
+    
+    /**
+     * Clears the users list.
+     */
+    public void clearUsers() {
+        users.clear();
     }
 }
