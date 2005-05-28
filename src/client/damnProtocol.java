@@ -353,14 +353,14 @@ public class damnProtocol {
         Matcher theMatcher;
         
         // Emoticons
-        if(rawdata.contains("&emote\t")) {
+        if(rawdata.indexOf("&emote\t") != -1) {
             thePattern = Pattern.compile("&emote\t([^\t]+)\t([0-9]+)\t([0-9]+)\t([^\t]*)\t([^\t]+)\t");
             theMatcher = thePattern.matcher(rawdata);
             rawdata = theMatcher.replaceAll("<img src=\"http://e.deviantart.com/emoticons/$5\" alt=\"$4\">");
         }
 
          // Thumbnails
-        if(rawdata.contains("&thumb\t")) {
+        if(rawdata.indexOf("&thumb\t") != -1) {
             thePattern = Pattern.compile("&thumb\t(\\d+)\t([^\t]*)\t([^\t]*)\t(\\d+)x(\\d+)\t(\\d+)\t([^\t]+)\t([^\t]*)\t");
             theMatcher = thePattern.matcher(rawdata);
             
@@ -389,7 +389,7 @@ public class damnProtocol {
         }
         
         
-        if (rawdata.contains("&avatar\t")) {
+        if (rawdata.indexOf("&avatar\t") != -1) {
             thePattern = Pattern.compile("&avatar\t([^\t]+)\t(\\d+)\t");
             theMatcher = thePattern.matcher(rawdata);
             while (theMatcher.find()) {
@@ -408,11 +408,11 @@ public class damnProtocol {
         // Anchor
         // &a/thttp://photography.deviantart.com/t/tphotography.deviantart.com&/a
         
-        if(rawdata.contains("&a\t")) 
+        if(rawdata.indexOf("&a\t") != -1) 
             rawdata = rawdata.replaceAll("&a\t([^\t]+)\t([^\t]*)\t([^&]*?)&/a\t",  "<a href=\"$1\" title=\"$2\">$2$3</a>");
         
         // Links
-        if(rawdata.contains("&link\t")) {
+        if(rawdata.indexOf("&link\t") != -1) {
             // link no description
             rawdata = rawdata.replaceAll("&link\t([^\t]+)\t&\t","<a href=\"$1\" title=\"$1\">[link]</a>");
             // link with description
@@ -453,7 +453,7 @@ public class damnProtocol {
         rawdata = rawdata.replace("&/ol\t","</ol>");
         
         //:dev...:
-        if(rawdata.contains("&dev")) rawdata = rawdata.replaceAll("&dev\t([^\t])\t([^\t]+)\t",
+        if(rawdata.indexOf("&dev") != -1) rawdata = rawdata.replaceAll("&dev\t([^\t])\t([^\t]+)\t",
                 "<a href=\"http://$2.deviantart.com\">$1$2</a>");
         
         rawdata = rawdata.replaceAll("\t", "(t)");

@@ -172,7 +172,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
         try {
             String highLight = "";
-            if(message.toLowerCase().contains(dP.getUser().toLowerCase())) highLight = "bgcolor=\"#BBC2BB\"";
+            if(message.toLowerCase().indexOf(dP.getUser().toLowerCase()) != -1) highLight = "bgcolor=\"#BBC2BB\"";
             
             if(message.toLowerCase().startsWith(dP.getUser().toLowerCase())) sendAwayAlert(channel);
             
@@ -199,7 +199,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         JEditorPane chatTerminal = chatTerminals.get(findPages(channel));
         try {
             String highLight = "";
-            if(message.toLowerCase().contains(dP.getUser().toLowerCase()) && !message.toLowerCase().startsWith("*** " + dP.getUser().toLowerCase())) {
+            if(message.toLowerCase().indexOf(dP.getUser().toLowerCase()) != -1 && !message.toLowerCase().startsWith("*** " + dP.getUser().toLowerCase())) {
                 highLight =  "bgcolor=\"#BBC2BB\"";
                 sendAwayAlert(channel);
             }
