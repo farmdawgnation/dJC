@@ -191,6 +191,7 @@ public class damnProtocol {
 
                 if(lineb[1].equalsIgnoreCase("members")) {
                     String[] propertysplit = data.split("\n\n");
+                    dJ.getChatMemberList(linea[1]).clearUsers();
                     for(int i=1; i<propertysplit.length; i++) {
                         String[] dataSplit = propertysplit[i].split("\n");
                         String[] linec = dataSplit[0].split(" ");
@@ -202,6 +203,7 @@ public class damnProtocol {
                 } else if(lineb[1].equalsIgnoreCase("privclasses")) {
                     String[] propertysplit = data.split("\n\n");
                     String[] privclasses = propertysplit[1].split("\n");
+                    dJ.getChatMemberList(linea[1]).clearPcl();
                     for(int i=0;i < privclasses.length; i++) {
                         String[] classdata = privclasses[i].split(":");
                         dJ.getChatMemberList(linea[1]).addPc(classdata[1]);
