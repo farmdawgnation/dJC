@@ -1,7 +1,12 @@
 /*
+ * dJC: The dAmn Java Client
  * AwaySetter.java
+ * ©2005 The dAmn Java Project
  *
- * Created on May 25, 2005, 3:20 PM
+ * This software and its source code are distributed under the terms and conditions of the GNU
+ * General Public License, Version 2. A copy of this license has been provided.
+ * If you do not agree with the terms of this license then please erase all copies
+ * of this program and it's source. Thank you.
  */
 
 package client;
