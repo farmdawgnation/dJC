@@ -35,9 +35,10 @@ public class damnApp {
     public damnApp() {
         conf = damnConfig.getInstance();
         protocol = new damnProtocol(this, conf);
-        dCP = new damnChatPage(this, protocol);
         prop = new damnProperties(conf);
+        dCP = new damnChatPage(this, protocol);
         dJgui = new damnAppGUI(this, dCP);
+        dCP.setPane(dJgui.getTabbedPane());
     }
     
     /**
@@ -65,7 +66,7 @@ public class damnApp {
      * @see client.damnChatPage#addChatPage
      */
     public void createChat(String chatname) {
-        dCP.addChatPage(chatname, dJgui.getTabbedPane());
+        dCP.addChatPage(chatname);
     }
     
     /**
