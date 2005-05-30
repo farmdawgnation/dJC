@@ -23,11 +23,15 @@ import javax.swing.JEditorPane;
 public class damnChatMemberList extends JEditorPane {
     private ArrayList<damnUser> users;
     private ArrayList<String> privclasses;
+    private ArrayList<String> searchResults;
+    private int searchIndex = -1;
+    private int searchSet = 0;
     
     /** Creates a new instance of damnChatMemberList */
     public damnChatMemberList() {
         users = new ArrayList<damnUser>();
         privclasses = new ArrayList<String>();
+        searchResults = new ArrayList<String>();
         setContentType("text/html");
         setEditable(false);
     }
@@ -88,11 +92,11 @@ public class damnChatMemberList extends JEditorPane {
     }
     
     /**
-     * Generates the HTML for the member list.
+     * Creates an alphabetical list of the members.
+     * @param userlist A damnUser array containing the list of members.
+     * @returns The sorted damnUser array.
      */
-    public void generateHtml() {
-        StringBuffer code = new StringBuffer("<html><body><table width=\"100%\">");
-        
+    private damnUser[] sortUsers() {
         Comparator<damnUser> dUc = new Comparator<damnUser>() {
             public int compare(damnUser usra, damnUser usrb) {
                 if(usra.getPlain().equalsIgnoreCase(usrb.getPlain())) {
@@ -108,6 +112,16 @@ public class damnChatMemberList extends JEditorPane {
         
         damnUser[] userArr = users.toArray(new damnUser[users.size()]);
         Arrays.sort(userArr, dUc);
+        return userArr;
+    }
+    
+    /**
+     * Generates the HTML for the member list.
+     */
+    public void generateHtml() {
+        StringBuffer code = new StringBuffer("<html><body><table width=\"100%\">");
+        
+        damnUser[] userArr = sortUsers();
         
         for(int a=0;a < privclasses.size(); a++) {
             if(classHasMembers(privclasses.get(a))) {
@@ -137,5 +151,67 @@ public class damnChatMemberList extends JEditorPane {
      */
     public void clearUsers() {
         users.clear();
+    }
+    
+    /**
+     * Runs a search of the member list.
+     * Results are stored internally.
+     * @param searchString The start of the username that we are searching for.
+     */
+    private void searchUsers(String searchstring) {
+        damnUser[] userArr = sortUsers();
+        int itemsFound = 0;
+        searchResults.clear();
+        for(int i=0;i < userArr.length;i++) {
+            if(userArr[i].getPlain().startsWith(searchstring)) {
+                searchResults.add(userArr[i].getPlain());
+                itemsFound = 1;
+            }
+        }
+        
+        if(itemsFound == 1) {
+            searchIndex = 0;
+        } else {
+            searchIndex = -1;
+        }
+    }
+    
+    /**
+     * Fetches the next item from a search.
+     * @returns The next item from the last search.
+     */
+    private String fetchResult() {
+        if(searchIndex == -1) {
+            return null;
+        } else {
+            if(searchIndex > searchResults.size() - 1) {
+                searchIndex = 0;
+            }
+            String result = searchResults.get(searchIndex);
+            searchIndex++;
+            return result;
+        }
+    }
+    
+    /**
+     * Controls the search functions as needed.
+     * @param searchstring The string to search by.
+     * @returns The first result on the first call, and the following results on subsequent calls.
+     */
+    public String searchAgent(String searchstring) {
+        if(searchSet == 0) {
+            searchSet = 1;
+            searchUsers(searchstring);
+            return fetchResult();
+        } else {
+            return fetchResult();
+        }
+    }
+    
+    /**
+     * Resets the search agent.
+     */
+    public void searchAgentReset() {
+        searchSet = 0;
     }
 }
