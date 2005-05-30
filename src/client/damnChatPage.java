@@ -22,10 +22,10 @@ import javax.swing.text.html.*;
 
 /**
  * This is the class which manages the chat pages.
- * @version 0.2.2
  * @author MSF
  */
 public class damnChatPage implements ActionListener, HyperlinkListener, KeyListener {
+    private JTabbedPane tabbedPane;
     private ArrayList<JPanel> chatPages;
     private ArrayList<JEditorPane> chatTerminals;
     private ArrayList<JScrollPane> chatScrollPanes;
@@ -35,6 +35,8 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
     private damnProtocol dP;
     private damnApp dJ;
     private String awaymsg;
+    private String defaultHtml;
+    private int searchSet = 0;
 
     /**
      * Initilizes an instance of damnChatPage.
@@ -51,6 +53,17 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         channelList = new ArrayList<String>();
         chatMemberLists = new ArrayList<damnChatMemberList>();
         awaymsg = null;
+        defaultHtml = new String("<html><head><style type=\"text/css\">\n a { color:#222222 } \n td.tn { margin-right:2px; margin-left: 2px; margin-top:2px; margin-bottom:2px; } </style>"+
+                "</head><body></body></html><html><head><style type=\"text/css\">\n a { color:#222222 } \n td.tn { margin-right:2px; margin-left: 2px; margin-top:2px; margin-bottom:2px; } </style>"+
+                "</head><body></body></html>");
+    }
+    
+    /**
+     * Assigns the tabbed pane to the damnChatPage object.
+     * @param paneObj The pane to assign.
+     */
+    public void setPane(JTabbedPane paneObj) {
+        tabbedPane = paneObj;
     }
     
     /**
@@ -58,9 +71,9 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
      * @param chatname The name of the channel to add a page for.
      * @param tabbedPane A reference to the Application's Tabbed Pane.
      */
-    public void addChatPage(String chatname, JTabbedPane tabbedPane) {
+    public void addChatPage(String chatname) {
         JPanel chatPage = new JPanel(new BorderLayout(5,5));
-        chatPage.setName("#" + chatname);
+        chatPage.setName("<html><body><font color=\"black\">#" + chatname + "</font></body></html>");
         
         JEditorPane chatTerminal = new JEditorPane();
 
@@ -68,14 +81,14 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         //chatTerminal.setLineWrap(true);
         chatTerminal.setEditable(false);
         chatTerminal.setContentType("text/html");
-        chatTerminal.setText("<html><head><style type=\"text/css\">\n a { color:#222222 } \n td.tn { margin-right:2px; margin-left: 2px; margin-top:2px; margin-bottom:2px; } </style>"+
-                "</head><body></body></html>");
+        chatTerminal.setText(defaultHtml);
         chatTerminal.addHyperlinkListener(this);
         JScrollPane chatScrollPane = new JScrollPane(chatTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         chatScrollPane.setAutoscrolls(true);
         chatPage.add(chatScrollPane, BorderLayout.CENTER);
         
         JTextField chatField = new JTextField(20);
+        chatField.setFocusTraversalKeysEnabled(false);
         chatField.addActionListener(this);
         chatField.addKeyListener(this);
         chatPage.add(chatField, BorderLayout.PAGE_END);
@@ -119,15 +132,16 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         JTextField chatField = chatFields.get(chatFields.indexOf(e.getSource()));
         if(chatField.getText().startsWith("/") && chatField.getText().startsWith("/me ") == false
                 && chatField.getText().startsWith("/topic ") == false && chatField.getText().startsWith("/title ") == false
-                && chatField.getText().startsWith("/kick ") == false && chatField.getText().startsWith("/admin ") == false) {
+                && chatField.getText().startsWith("/kick ") == false && chatField.getText().startsWith("/admin ") == false
+                && chatField.getText().equalsIgnoreCase("/clear") == false) {
             dJ.actionPerformed(e);
         } else {
             if(chatField.getText().startsWith("/topic ") || chatField.getText().startsWith("/title ")) {
-                String channel = chatPages.get(chatFields.indexOf(e.getSource())).getName();
+                String channel = channelList.get(chatFields.indexOf(e.getSource()));
                 String comparts[] = chatField.getText().split(" ", 2);
                 dP.doSet(channel.substring(1), comparts[0].substring(1), comparts[1]);
             } else if(chatField.getText().startsWith("/kick ")) {
-                String channel = chatPages.get(chatFields.indexOf(e.getSource())).getName();
+                String channel = channelList.get(chatFields.indexOf(e.getSource()));
                 String comparts[] = chatField.getText().split(" ", 3);
                 if(comparts[2] != null) {
                     dP.doKick(channel.substring(1), comparts[1], comparts[2]);
@@ -135,12 +149,14 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
                     dP.doKick(channel.substring(1), comparts[1], " ");
                 }
             } else if(chatField.getText().startsWith("/admin ")) {
-                String channel = chatPages.get(chatFields.indexOf(e.getSource())).getName();
+                String channel = channelList.get(chatFields.indexOf(e.getSource()));
                 String parts[] = chatField.getText().split(" ", 2);
                 dP.doAdmin(channel.substring(1), parts[1]);
+            } else if(chatField.getText().equalsIgnoreCase("/clear")) {
+                chatTerminals.get(chatFields.indexOf(e.getSource())).setText(defaultHtml);
             } else {
-                JPanel chatPage = chatPages.get(chatFields.indexOf(e.getSource()));
-                dP.doSendMessage(chatPage.getName().substring(1), chatField.getText());
+                String channel = channelList.get(chatFields.indexOf(e.getSource()));
+                dP.doSendMessage(channel, chatField.getText());
             }
         }
         if(!chatField.getText().equalsIgnoreCase("You are away - you must unset away before you can talk.")) {
@@ -294,8 +310,24 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
     }
 
     public void keyTyped(KeyEvent keyEvent) {
+        damnChatMemberList memList = chatMemberLists.get(chatFields.indexOf(keyEvent.getSource()));
         if(keyEvent.getKeyChar() == '\t') {
-            System.out.println("TAB");
+            JTextField field = chatFields.get(chatFields.indexOf(keyEvent.getSource()));
+            
+            String[] parts = field.getText().split(" ");
+            
+            String result = memList.searchAgent(parts[parts.length-1]);
+            field.setText("");
+            
+            for(int i=0;i<parts.length;i++) {
+                if(i < parts.length-1) {
+                    field.setText(field.getText() + parts[i] + " ");
+                } else {
+                    field.setText(field.getText() + result);
+                }
+            }
+        } else {
+            memList.searchAgentReset();
         }
     }
 }
