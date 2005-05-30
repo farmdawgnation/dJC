@@ -15,7 +15,6 @@ import java.util.regex.*;
 
 /**
  * The interface class for the protocol.
- * @version 0.2.2
  * @author MSF
  */
 public class damnProtocol {
