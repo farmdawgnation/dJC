@@ -133,7 +133,8 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         if(chatField.getText().startsWith("/") && chatField.getText().startsWith("/me ") == false
                 && chatField.getText().startsWith("/topic ") == false && chatField.getText().startsWith("/title ") == false
                 && chatField.getText().startsWith("/kick ") == false && chatField.getText().startsWith("/admin ") == false
-                && chatField.getText().equalsIgnoreCase("/clear") == false) {
+                && chatField.getText().equalsIgnoreCase("/clear") == false && chatField.getText().startsWith("/promote ") == false
+                && chatField.getText().startsWith("/demote ") == false) {
             dJ.actionPerformed(e);
         } else {
             if(chatField.getText().startsWith("/topic ") || chatField.getText().startsWith("/title ")) {
@@ -154,6 +155,26 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
                 dP.doAdmin(channel.substring(1), parts[1]);
             } else if(chatField.getText().equalsIgnoreCase("/clear")) {
                 chatTerminals.get(chatFields.indexOf(e.getSource())).setText(defaultHtml);
+            } else if(chatField.getText().startsWith("/promote ")) {
+                String channel = channelList.get(chatFields.indexOf(e.getSource()));
+                String parts[] = chatField.getText().split(" ");
+                if(parts.length > 2) {
+                    dP.doPromote(channel, parts[1], parts[2]);
+                } else if(parts.length == 2) {
+                    dP.doPromote(channel, parts[1], "");
+                } else {
+                    dJ.terminalEcho(0, "promote: Not enough arguments.");
+                }
+            } else if(chatField.getText().startsWith("/demote ")) {
+                String channel = channelList.get(chatFields.indexOf(e.getSource()));
+                String parts[] = chatField.getText().split(" ");
+                if(parts.length > 2) {
+                    dP.doDemote(channel, parts[1], parts[2]);
+                } else if(parts.length == 2) {
+                    dP.doDemote(channel, parts[1], "");
+                } else {
+                    dJ.terminalEcho(0, "demote: Not enough arguments.");
+                }
             } else {
                 String channel = channelList.get(chatFields.indexOf(e.getSource()));
                 dP.doSendMessage(channel, chatField.getText());
