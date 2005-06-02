@@ -32,6 +32,7 @@ public class damnAppGUI extends JFrame {
     private JMenu fileMenu;
     private JMenu helpMenu;
     private JMenu awayMenu;
+    private JMenu toolsMenu;
     private JMenuItem connectItem;
     private JMenuItem disconnectItem;
     private JMenuItem preferencesItem;
@@ -39,6 +40,7 @@ public class damnAppGUI extends JFrame {
     private JMenuItem aboutItem;
     private JMenuItem goAwayItem;
     private JMenuItem comeBackItem;
+    private JMenuItem whoisItem;
     
     /**
      * Constructs the damnAppGUI Object.
@@ -67,6 +69,10 @@ public class damnAppGUI extends JFrame {
         //Away Menu
         awayMenu = new JMenu("Away");
         menuBar.add(awayMenu);
+        
+        //Tools Menu
+        toolsMenu = new JMenu("Tools");
+        menuBar.add(toolsMenu);
         
         //Help Menu
         helpMenu = new JMenu("Help");
@@ -116,9 +122,18 @@ public class damnAppGUI extends JFrame {
         });
         awayMenu.add(comeBackItem);
             
+        //Tools Menu Items
+        whoisItem = new JMenuItem("Whois");
+        toolsMenu.add(whoisItem);
+        
         
         //Help Menu Items
         aboutItem = new JMenuItem("About");
+        aboutItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dJ.aboutMoi();
+            }
+        });
         helpMenu.add(aboutItem);
         
         //Set the Menu Bar
@@ -183,18 +198,7 @@ public class damnAppGUI extends JFrame {
             connectItem.setEnabled(true);
             disconnectItem.setEnabled(false);
         } else if(parts[0].equalsIgnoreCase("/about")) {
-            dJ.terminalEcho(0, "");
-            dJ.terminalEcho(0, "dJC: The dAmn Java Client");
-            dJ.terminalEcho(0, "http://www.sourceforge.net/projects/damnjava");
-            dJ.terminalEcho(0, "");
-            dJ.terminalEcho(0, "Written by...");
-            dJ.terminalEcho(0, "\tMSF - Lead Developer/Project Manager");
-            dJ.terminalEcho(0, "\tEric Olander - Developer");
-            dJ.terminalEcho(0, "\tMiklosi Attila - Developer");
-            dJ.terminalEcho(0, "");
-            dJ.terminalEcho(0, "If you are interested in getting involved: Let MSF know.");
-            dJ.terminalEcho(0, "Now back to your regularly scheduled programming...");
-            dJ.terminalEcho(0, "");
+            dJ.aboutMoi();
         } else if(parts[0].equalsIgnoreCase("/token")) {
             TokenFetcher tf = new TokenFetcher("www.deviantart.com");
 
@@ -210,6 +214,17 @@ public class damnAppGUI extends JFrame {
             dCP.setAway(peices[1]);
         } else if(parts[0].equalsIgnoreCase("/back")) {
             dCP.unsetAway();
+        } else if(parts[0].equalsIgnoreCase("/whois")) {
+            dJ.runWhois(parts[1]);
+        } else if(parts[0].equalsIgnoreCase("/kill")) {
+            String [] reparts;
+            if(e.getSource() == serverCommandField) {
+                reparts = serverCommandField.getText().split(" ", 4);
+            } else {
+                JTextField txtfld = dCP.chatFields.get(dCP.chatFields.indexOf(e.getSource()));
+                reparts = txtfld.getText().split(" ", 4);
+            }
+            dJ.passKill(reparts[1], reparts[2], reparts[3]);
         } else {
             dJ.terminalEcho(0, "Unknown Command.");
         }
