@@ -344,7 +344,11 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
                 if(i < parts.length-1) {
                     field.setText(field.getText() + parts[i] + " ");
                 } else {
-                    field.setText(field.getText() + result);
+                    if(result != null) {
+                        field.setText(field.getText() + result);
+                    } else {
+                        field.setText(field.getText() + parts[i]);
+                    }
                 }
             }
         } else {
