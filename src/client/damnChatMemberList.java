@@ -214,4 +214,17 @@ public class damnChatMemberList extends JEditorPane {
     public void searchAgentReset() {
         searchSet = 0;
     }
+    
+    /**
+     * Promotes/Demotes the specified user to the specified class.
+     * @param username The user to promote.
+     * @param privclass The class to promote the user to.
+     */
+    public void setClass(String username, String privclass) {
+        for(int i=0;i<users.size();i++) {
+            if(users.get(i).getPlain().equalsIgnoreCase(username)) {
+                users.get(i).setPc(privclass);
+            }
+        }
+    }
 }
