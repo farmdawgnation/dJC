@@ -187,6 +187,14 @@ public class damnApp {
     }
     
     /**
+     * Passes a whois request to the protocol object.
+     * @param username The username to run a whois on.
+     */
+    public void runWhois(String username) {
+        protocol.doGetUserInformation(username);
+    }
+    
+    /**
      * Checks to see if we are connected, then parts a channel.
      * @param channel Channel to part.
      */
@@ -199,7 +207,36 @@ public class damnApp {
     }
     
     /**
-     * This function preforms all startup operations for the program.
+     * Will write the about data to the server terminal.
+     * Thought it wouldbe a good idea to make it to a method so it's easy to edit.
+     */
+    public void aboutMoi() {
+        terminalEcho(0, "");
+        terminalEcho(0, "dJC: The dAmn Java Client");
+        terminalEcho(0, "http://www.sourceforge.net/projects/damnjava");
+        terminalEcho(0, "");
+        terminalEcho(0, "Written by...");
+        terminalEcho(0, "\tMSF - Lead Developer/Project Manager");
+        terminalEcho(0, "\tEric Olander - Developer");
+        terminalEcho(0, "\tMiklosi Attila - Developer");
+        terminalEcho(0, "");
+        terminalEcho(0, "If you are interested in getting involved: Let MSF know.");
+        terminalEcho(0, "Now back to your regularly scheduled programming...");
+        terminalEcho(0, "");
+    }
+    
+    /**
+     * Passes along the kill command to protocol object.
+     * @param user User to kill.
+     * @param conn Connection to kill.
+     * @param reason Reason for kill.
+     */
+    public void passKill(String user, String conn, String reason) {
+        protocol.doKill(user, conn, reason);
+    }
+    
+    /**
+     * This method preforms all startup operations for the program.
      */
     public void go() {
         try {
