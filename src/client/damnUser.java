@@ -40,6 +40,14 @@ public class damnUser {
     }
     
     /**
+     * Sets the priv class for the user.
+     * @param privclass The new privclass.
+     */
+    public void setPc(String privclass) {
+        pc = privclass;
+    }
+    
+    /**
      * Get the formatted version of the username for the member list.
      */
     public String getFormatted() {
