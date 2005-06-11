@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="retrojar" name="dJC">
+    <taskdef name="retroweaver" classname="com.rc.retroweaver.ant.RetroWeaverTask">
+        <classpath>
+            <fileset dir="../lib" includes="**/*"/>
+        </classpath>
+    </taskdef>
+    <target name="del">
+        <delete dir="../classes"/>
+    </target>
+    <target name="comp" depends="del">
+        <mkdir dir="../classes"/>
+        <javac srcdir="../src" destdir="../classes" deprecation="on" debug="on" debuglevel="lines,source">
+    	</javac>
+    </target> 
+    <target name="retro" depends="comp">
+        <retroweaver srcdir="../classes" verbose="true"/>
+    </target>
+    <target name="retrojar" depends="retro">
+        <jar jarfile="dJC.jar" basedir="../." includes="lib/retroweaver-rt.jar">
+            <fileset dir="../classes" includes="**/*.class"/>
+            <fileset dir="../src" includes="**/*.properties"/>
+            <manifest>
+    		<attribute name="Main-Class" value="client.damnApp"/>
+    		<attribute name="Class-Path" value="lib/retroweaver-rt.jar"/>
+    	    </manifest>
+        </jar>    
+    </target>
+</project>
