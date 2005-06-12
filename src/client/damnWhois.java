@@ -88,7 +88,7 @@ public class damnWhois extends javax.swing.JFrame {
                 if (d[0].equals("usericon")) iconString = d[1];  
             }
 
-            String[] types = {"gif","gif","jpg"};
+            String[] types = {"","gif","jpg","png"};
             int type = Integer.parseInt(iconString);
             String name = userName.toLowerCase();
             String avatar = "<img src=\"http://a.deviantart.com/avatars/"+name.charAt(0)+"/"+name.charAt(1)+"/"+name+"."+types[type]+"\">";
