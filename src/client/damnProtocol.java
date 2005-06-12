@@ -23,6 +23,10 @@ public class damnProtocol {
     private damnConfig conf;
     private String username;
     private String password;
+    private String[] whoisInfo;
+    boolean whoisInfoReady;
+    boolean whoisBadUsername;
+    
    
     /**
      * Protocol Interface Constructor
@@ -31,6 +35,9 @@ public class damnProtocol {
     public damnProtocol(damnApp appObj, damnConfig configObj) {
         dJ = appObj;
         conf = configObj;
+        whoisInfo = new String[12];
+        whoisInfoReady = false;
+        whoisBadUsername = false;
     }
     
     /**
@@ -239,8 +246,16 @@ public class damnProtocol {
                 } 
             } else if(tmpBox[0].startsWith("property login:")) {
                     dJ.terminalEcho(1, "User infos: ");
-                    for (int i=0; i<8; i++)
+                    for (int i=0; i<11; i++) {
+                        whoisInfo[i] = tmpBox[i+1];
                         dJ.terminalEcho(1, tmpBox[i+1]);
+                    }
+                    whoisInfoReady = true;
+            } else if(tmpBox[0].startsWith("get login:")) {
+                    dJ.terminalEcho(1, "Error: ");
+                    dJ.terminalEcho(1, tmpBox[1]);
+                    whoisBadUsername = true;
+                    
             } else if(tmpBox[0].equalsIgnoreCase("disconnect")) {
                 String error = tmpBox[1].split("=")[1];
                 dJ.terminalEcho(0, "Disconnected from server. [" + error + "]");
@@ -334,7 +349,21 @@ public class damnProtocol {
      * @param property The property.
      */
     public void doGetUserInformation(String user) {
+        whoisInfoReady = false;
+        whoisBadUsername = false;
         dC.writeData(buildPacket(1, "get login:" + user, "p=info"));
+    }
+    
+    /**
+     * Returns the raw user information data given by the chat server
+     * whoisInfoReady must be true for this method to work
+     */
+    public String[] whoisData()
+    {
+        if (whoisInfoReady) {
+            whoisInfoReady = false;
+            return whoisInfo;
+        } else return null;
     }
     
      /**

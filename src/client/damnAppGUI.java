@@ -1,7 +1,7 @@
 /*
  * dJC: The dAmn Java Client
  * damnAppGUI.java
- * ©2005 The dAmn Java Project
+ * ?2005 The dAmn Java Project
  *
  * This software and its source code are distributed under the terms and conditions of the GNU
  * General Public License, Version 2. A copy of this license has been provided.
@@ -124,8 +124,12 @@ public class damnAppGUI extends JFrame {
             
         //Tools Menu Items
         whoisItem = new JMenuItem("Whois");
+        whoisItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dJ.runWhois("");
+            }
+        });
         toolsMenu.add(whoisItem);
-        
         
         //Help Menu Items
         aboutItem = new JMenuItem("About");
@@ -150,7 +154,7 @@ public class damnAppGUI extends JFrame {
         JScrollPane serverScrollPane = new JScrollPane(serverTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         serverPage.add(serverScrollPane, BorderLayout.CENTER);
         
-        serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.4\n©2005 The dAmn Java Project\nType '/about' for more info.'\n");
+        serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.4\n?2005 The dAmn Java Project\nType '/about' for more info.'\n");
         
         serverCommandField = new JTextField(20);
         serverCommandField.addActionListener(new ActionListener() {

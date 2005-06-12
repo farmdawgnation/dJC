@@ -2,7 +2,7 @@ package client;
 /*
  * dJC: The dAmn Java Client
  * damnApp.java
- * ©2005 The dAmn Java Project
+ * ?2005 The dAmn Java Project
  *
  * This software and its source code are distributed under the terms and conditions of the GNU
  * General Public License, Version 2. A copy of this license has been provided.
@@ -26,6 +26,7 @@ public class damnApp {
     private damnProperties prop;
     private damnConfig conf;
     private damnAppGUI dJgui;
+    private damnWhois dWho;
     
     
     /**
@@ -38,6 +39,7 @@ public class damnApp {
         prop = new damnProperties(conf);
         dCP = new damnChatPage(this, protocol);
         dJgui = new damnAppGUI(this, dCP);
+        dWho = new damnWhois(protocol);
         dCP.setPane(dJgui.getTabbedPane());
     }
     
@@ -191,7 +193,9 @@ public class damnApp {
      * @param username The username to run a whois on.
      */
     public void runWhois(String username) {
-        protocol.doGetUserInformation(username);
+        //dWho.show();
+        dWho.showWhois(username);
+        //protocol.doGetUserInformation(username);
     }
     
     /**
