@@ -194,7 +194,7 @@ public class damnProtocol {
                 String linea[] = tmpBox[0].split(":");
                 String lineb[] = tmpBox[1].split("=");
                 String linec[];
-                if(tmpBox.length == 2) {
+                if(tmpBox.length == 3) {
                     linec = tmpBox[2].split("=");
                 } else {
                     linec = null;
@@ -443,7 +443,7 @@ public class damnProtocol {
                     String link = "<a href=\"www.deviantart.com/view/$1\">";
                     rawdata = theMatcher.replaceFirst("<td class=\"tn\"><a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\" ></a></td>");
                 } else {
-                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\"></a>");
+                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\" border=\"0\"></a>");
                 }
                 
                 theMatcher = thePattern.matcher(rawdata);
