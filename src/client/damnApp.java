@@ -67,8 +67,8 @@ public class damnApp {
      * @param chatname The name of the channel the page is being created for.
      * @see client.damnChatPage#addChatPage
      */
-    public void createChat(String chatname) {
-        dCP.addChatPage(chatname);
+    public void createChat(int priv, String chatname) {
+        dCP.addChatPage(priv, chatname);
     }
     
     /**
@@ -189,6 +189,18 @@ public class damnApp {
     }
     
     /**
+     * Checks to see if we're connected, then joins a private chat.
+     * @param user User to private chat with.
+     */
+    public void joinPrivateChat(String user) {
+        if(connected == 1) {
+            protocol.doJoinPrivateChat(user);
+        } else {
+            terminalEcho(0, "Not connected moron!");
+        }
+    }
+    
+    /**
      * Passes a whois request to the protocol object.
      * @param username The username to run a whois on.
      */
@@ -205,6 +217,18 @@ public class damnApp {
     public void partChannel(String channel) {
         if(connected == 1) {
             protocol.doPartChannel(channel);
+        } else {
+            terminalEcho(0, "Gotta connect first you idiot.");
+        }
+    }
+    
+    /**
+     * Checks to see if we're connected then parts a private chat.
+     * @param user The user to part the private chat with.
+     */
+    public void partPrivateChat(String user) {
+        if(connected == 1) {
+            protocol.doPartPrivateChat(user);
         } else {
             terminalEcho(0, "Gotta connect first you idiot.");
         }
@@ -237,6 +261,14 @@ public class damnApp {
      */
     public void passKill(String user, String conn, String reason) {
         protocol.doKill(user, conn, reason);
+    }
+    
+    /**
+     * Passes along the set selected command.
+     * @param index The index of the tab to select.
+     */
+    public void changeSelectedTab(int index) {
+        dCP.changeSelectedTab(index);
     }
     
     /**
