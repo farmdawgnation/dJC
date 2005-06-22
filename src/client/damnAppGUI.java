@@ -197,6 +197,10 @@ public class damnAppGUI extends JFrame {
             dJ.joinChannel(parts[1]);
         } else if(parts[0].equalsIgnoreCase("/part")) {
             dJ.partChannel(parts[1]);
+        } else if(parts[0].equalsIgnoreCase("/jpchat")) {
+            dJ.joinPrivateChat(parts[1]);
+        } else if(parts[0].equalsIgnoreCase("/ppchat")) {
+            dJ.partPrivateChat(parts[1]);
         } else if(parts[0].equalsIgnoreCase("/disconnect")) {
             dJ.disconnect();
             connectItem.setEnabled(true);
