@@ -24,7 +24,7 @@ import javax.swing.text.html.*;
  * This is the class which manages the chat pages.
  * @author MSF
  */
-public class damnChatPage implements ActionListener, HyperlinkListener, KeyListener {
+public class damnChatPage implements ActionListener, HyperlinkListener, KeyListener, ChangeListener {
     private JTabbedPane tabbedPane;
     private ArrayList<JPanel> chatPages;
     private ArrayList<JEditorPane> chatTerminals;
@@ -64,6 +64,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
      */
     public void setPane(JTabbedPane paneObj) {
         tabbedPane = paneObj;
+        tabbedPane.addChangeListener(this);
     }
     
     /**
@@ -71,9 +72,13 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
      * @param chatname The name of the channel to add a page for.
      * @param tabbedPane A reference to the Application's Tabbed Pane.
      */
-    public void addChatPage(String chatname) {
+    public void addChatPage(int priv, String chatname) {
         JPanel chatPage = new JPanel(new BorderLayout(5,5));
-        chatPage.setName("<html><body><font color=\"black\">#" + chatname + "</font></body></html>");
+        if(priv == 0) {
+            chatPage.setName("<html><body><font color=\"black\">#" + chatname + "</font></body></html>");
+        } else if(priv == 1) {
+            chatPage.setName("<html><body><font color=\"black\">" + chatname + "</font></body></html>");
+        }
         
         JEditorPane chatTerminal = new JEditorPane();
 
@@ -105,7 +110,11 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         chatScrollPanes.add(chatScrollPane);
         chatFields.add(chatField);
         chatMemberLists.add(memberList);
-        channelList.add(chatname);
+        if(priv == 1) {
+            channelList.add("pchat:" + chatname);
+        } else {
+            channelList.add(chatname);
+        }
     }
     
     /** 
@@ -140,19 +149,19 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
             if(chatField.getText().startsWith("/topic ") || chatField.getText().startsWith("/title ")) {
                 String channel = channelList.get(chatFields.indexOf(e.getSource()));
                 String comparts[] = chatField.getText().split(" ", 2);
-                dP.doSet(channel.substring(1), comparts[0].substring(1), comparts[1]);
+                dP.doSet(channel, comparts[0].substring(1), comparts[1]);
             } else if(chatField.getText().startsWith("/kick ")) {
                 String channel = channelList.get(chatFields.indexOf(e.getSource()));
                 String comparts[] = chatField.getText().split(" ", 3);
                 if(comparts[2] != null) {
-                    dP.doKick(channel.substring(1), comparts[1], comparts[2]);
+                    dP.doKick(channel, comparts[1], comparts[2]);
                 } else {
-                    dP.doKick(channel.substring(1), comparts[1], " ");
+                    dP.doKick(channel, comparts[1], " ");
                 }
             } else if(chatField.getText().startsWith("/admin ")) {
                 String channel = channelList.get(chatFields.indexOf(e.getSource()));
                 String parts[] = chatField.getText().split(" ", 2);
-                dP.doAdmin(channel.substring(1), parts[1]);
+                dP.doAdmin(channel, parts[1]);
             } else if(chatField.getText().equalsIgnoreCase("/clear")) {
                 chatTerminals.get(chatFields.indexOf(e.getSource())).setText(defaultHtml);
             } else if(chatField.getText().startsWith("/promote ")) {
@@ -177,7 +186,11 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
                 }
             } else {
                 String channel = channelList.get(chatFields.indexOf(e.getSource()));
-                dP.doSendMessage(channel, chatField.getText());
+                if(channel.startsWith("pchat:")) {
+                    dP.doSendPMessage(channel.split(":")[1], chatField.getText());
+                } else {
+                    dP.doSendMessage(channel, chatField.getText());
+                }
             }
         }
         if(!chatField.getText().equalsIgnoreCase("You are away - you must unset away before you can talk.")) {
@@ -221,8 +234,16 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
             e.printStackTrace();
         }
         
+        if(tabbedPane.getSelectedIndex() != findPages(channel)+1 && message.indexOf(dP.getUser()) == -1) {
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"red\">"));
+        }
+        
+        if(tabbedPane.getSelectedIndex() != findPages(channel)+1 && message.indexOf(dP.getUser()) != -1) {
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"green\">"));
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"red\">", "<font color=\"green\">"));
+        }
+        
         chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
-//        chatTerminal.invalidate();
 
     }
     
@@ -248,8 +269,17 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        if(tabbedPane.getSelectedIndex() != findPages(channel)+1 && message.indexOf(dP.getUser()) == -1) {
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"red\">"));
+        }
+        
+        if(tabbedPane.getSelectedIndex() != findPages(channel)+1 && message.indexOf(dP.getUser()) != -1) {
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"green\">"));
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"red\">", "<font color=\"green\">"));
+        }
+        
         chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
-//        chatTerminal.invalidate();
         
     }
     
@@ -288,7 +318,8 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         for(int i=0;i <chatFields.size();i++) {
             chatFields.get(i).setText("You are away - you must unset away before you can talk.");
             chatFields.get(i).setEditable(false);
-            dP.doSendMessage(chatPages.get(i).getName().substring(1),  "/me is away: " + message);
+            if(chatPages.get(i).getName().indexOf("IdleRPG") == -1)
+                dP.doSendMessage(channelList.get(i),  "/me is away: " + message);
         }
     }
     
@@ -300,7 +331,8 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         for(int i=0;i<chatFields.size();i++) {
             chatFields.get(i).setText("");
             chatFields.get(i).setEditable(true);
-            dP.doSendMessage(chatPages.get(i).getName().substring(1), "/me is back.");
+            if(chatPages.get(i).getName().indexOf("IdleRPG") == -1)
+                dP.doSendMessage(channelList.get(i), "/me is back.");
         }
     }
     
@@ -309,7 +341,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
      * @param channel The Channel to send the alert to.
      */
     public void sendAwayAlert(String channel) {
-        if(awaymsg != null) {
+        if(awaymsg != null && !channel.equalsIgnoreCase("IdleRPG")) {
             dP.doSendMessage(channel, "/me is away: " + awaymsg);
         }
     }
@@ -354,5 +386,18 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         } else {
             memList.searchAgentReset();
         }
+    }
+
+    public void stateChanged(ChangeEvent changeEvent) {
+        tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()).replace("<font color=\"red\">", "<font color=\"black\">"));
+        tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()).replace("<font color=\"green\">", "<font color=\"black\">"));
+    }
+    
+    /**
+     * Sets the selected tab.
+     * @param index Index of the tab to select.
+     */
+    public void changeSelectedTab(int index) {
+        tabbedPane.setSelectedIndex(index);
     }
 }
