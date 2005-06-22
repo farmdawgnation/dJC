@@ -12,6 +12,7 @@ package client;
 import java.io.*;
 import java.net.*;
 import java.util.regex.*;
+import java.util.Arrays;
 
 /**
  * The interface class for the protocol.
@@ -138,31 +139,47 @@ public class damnProtocol {
                 } else {
                     dJ.terminalEcho(0, "Login Unsuccessful, please close connection and try again.");
                 }
-            } else if(tmpBox[0].startsWith("recv chat:")) {
+            } else if(tmpBox[0].startsWith("recv ")) {
                 if(tmpBox[2].equalsIgnoreCase("msg main")) {
                     tmpBox[5] = processTablumps(tmpBox[5]);
                     String fromtxt = tmpBox[3].split("=")[1];
                     String infotext = tmpBox[0].split(":")[1];
-                    dJ.echoChat(infotext, fromtxt, tmpBox[5]);
+                    if(infotext.equalsIgnoreCase(username) && tmpBox[0].split(":").length == 3) {
+                        infotext = tmpBox[0].split(":")[2];
+                    }
+                    if(tmpBox[0].split(" ")[1].startsWith("pchat:")) {
+                        dJ.echoChat("pchat:" + infotext, fromtxt, tmpBox[5]);
+                    } else {
+                        dJ.echoChat(infotext, fromtxt, tmpBox[5]);
+                    }
                 } else if(tmpBox[2].equalsIgnoreCase("action main")) {
                     tmpBox[5] = processTablumps(tmpBox[5]);
                     String fromtext = tmpBox[3].split("=")[1];
                     String infotext = tmpBox[0].split(":")[1];
+                    if(infotext == getUser() && tmpBox[0].split(":").length == 3) {
+                        infotext = tmpBox[0].split(":")[2];
+                    }
                     dJ.echoChat(infotext, "*** " + fromtext + " " + tmpBox[5]);
                 } else if(tmpBox[2].startsWith("join ")) {
                     String[] whoisit = tmpBox[2].split(" ");
                     String[] privclass = tmpBox[5].split("=");
                     String[] symbol = tmpBox[7].split("=", 2);
-                    String[] infotext= tmpBox[0].split(":");
-                    dJ.echoChat(infotext[1], "** " + whoisit[1] + " has joined.");
-                    dJ.getChatMemberList(infotext[1]).addUser(whoisit[1], symbol[1], privclass[1]);
-                    dJ.getChatMemberList(infotext[1]).generateHtml();
+                    String infotext= tmpBox[0].split(":")[1];
+                    if(infotext == getUser() && tmpBox[0].split(":").length == 3) {
+                        infotext = tmpBox[0].split(":")[2];
+                    }
+                    dJ.echoChat(infotext, "** " + whoisit[1] + " has joined.");
+                    dJ.getChatMemberList(infotext).addUser(whoisit[1], symbol[1], privclass[1]);
+                    dJ.getChatMemberList(infotext).generateHtml();
                 } else if(tmpBox[2].startsWith("part ")) {
                     String[] whoisit = tmpBox[2].split(" ");
-                    String[] infotext = tmpBox[0].split(":");
-                    dJ.echoChat(infotext[1], "** " + whoisit[1] + " has left.");
-                    dJ.getChatMemberList(infotext[1]).delUser(whoisit[1]);
-                    dJ.getChatMemberList(infotext[1]).generateHtml();
+                    String infotext = tmpBox[0].split(":")[1];
+                    if(infotext == getUser() && tmpBox[0].split(":").length == 3) {
+                        infotext = tmpBox[0].split(":")[2];
+                    }
+                    dJ.echoChat(infotext, "** " + whoisit[1] + " has left.");
+                    dJ.getChatMemberList(infotext).delUser(whoisit[1]);
+                    dJ.getChatMemberList(infotext).generateHtml();
                 } else if(tmpBox[2].startsWith("kicked ")) {
                     String[] whoisit = tmpBox[2].split(" ");
                     String[] kicker = tmpBox[3].split("=");
@@ -180,15 +197,31 @@ public class damnProtocol {
                     dJ.getChatMemberList(channel).generateHtml();
                     dJ.echoChat(channel, "** " + who + " has been made a member of " + newclass + " by " + bywho + " **");
                 }
-            } else if(tmpBox[0].startsWith("join chat:")) {
-                String linea[] = tmpBox[0].split(":");
-                String lineb[] = tmpBox[1].split("=");
+            } else if(tmpBox[0].startsWith("join ")) {
+                if(tmpBox[0].split(" ")[1].startsWith("chat")) {
+                    String linea[] = tmpBox[0].split(":");
+                    String lineb[] = tmpBox[1].split("=");
 
-                if(lineb[1].equalsIgnoreCase("ok")) {
-                    dJ.createChat(linea[1]);
-                    dJ.terminalEcho(0, "Successfully joined #" + linea[1]);
-                } else if(lineb[1].equalsIgnoreCase("chatroom doesn't exist")) {
-                    dJ.terminalEcho(0, "Chat room does not exist.");
+                    if(lineb[1].equalsIgnoreCase("ok")) {
+                        dJ.createChat(0, linea[1]);
+                        dJ.terminalEcho(0, "Successfully joined #" + linea[1]);
+                    } else if(lineb[1].equalsIgnoreCase("chatroom doesn't exist")) {
+                        dJ.terminalEcho(0, "Chat room does not exist.");
+                    }
+                } else if(tmpBox[0].split(" ")[1].startsWith("pchat")) {
+                    String linea = tmpBox[0].split(":")[1];
+                    String lineb[] = tmpBox[1].split("=");
+                    
+                    if(linea.equalsIgnoreCase(getUser())) {
+                        linea = tmpBox[0].split(":")[2];
+                    }
+                    
+                    if(lineb[1].equalsIgnoreCase("ok")) {
+                        dJ.createChat(1, linea);
+                        dJ.terminalEcho(0, "Now chatting with " + linea);
+                    } else if(lineb[1].equalsIgnoreCase("chatroom doesn't exist")) {
+                        dJ.terminalEcho(0, "Chat room does not exist.");
+                    }
                 }
             } else if(tmpBox[0].startsWith("part chat:")) {
                 String linea[] = tmpBox[0].split(":");
@@ -210,6 +243,17 @@ public class damnProtocol {
                 } else {
                     dJ.terminalEcho(0, "Unreconized Error: " + lineb[1]);
                 }
+            } else if(tmpBox[0].startsWith("kicked chat:")) {
+                String linea[] = tmpBox[0].split(":");
+                String lineb[] = tmpBox[1].split("=");
+                
+                dJ.deleteChat(linea[1]);
+                if(tmpBox.length == 3) {
+                    dJ.terminalEcho(0, "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * " + tmpBox[2]);
+                } else {
+                    dJ.terminalEcho(0, "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * ");
+                }
+                dJ.changeSelectedTab(0);
             } else if(tmpBox[0].startsWith("property chat:")) {
                 String linea[] = tmpBox[0].split(":");
                 String lineb[] = tmpBox[1].split("=");
@@ -324,6 +368,27 @@ public class damnProtocol {
     }
     
     /**
+     * Sends a message to a private chat.
+     * @param user The user who you are chatting with.
+     * @param message The message.
+     */
+    public void doSendPMessage(String user, String message) {
+        String[] pchatusrs;
+        pchatusrs = new String[2];
+        pchatusrs[0] = new String(user);
+        pchatusrs[1] = new String(getUser());
+        
+        Arrays.sort(pchatusrs);
+        
+        if(message.startsWith("/me ")) {
+            String[] pieces = message.split("/me ");
+            dC.writeData(buildPacket(0, "send pchat:" + pchatusrs[0] + ":" + pchatusrs[1], "", "action main", "", pieces[1]));
+        } else {
+            dC.writeData(buildPacket(0, "send pchat:" + pchatusrs[0] + ":" + pchatusrs[1], "", "msg main", "", message));
+        }
+    }
+    
+    /**
      * Sets a property in the channel.
      * @param channel The channel for which the property will be set.
      * @param property The channel property to be set.
@@ -403,6 +468,24 @@ public class damnProtocol {
      */
     public void doKill(String user, String conn, String reason) {
         dC.writeData(buildPacket(0, "kill login:" + user, "conn=" + conn, reason));
+    }
+    
+    /**
+     * Starts a private chat with the specified user.
+     * @param user The user to chat with.
+     */
+    public void doJoinPrivateChat(String user) {
+        dC.writeData(buildPacket(1, "join pchat:" + user + ":" + this.getUser()));
+        dC.writeData(buildPacket(1, "join pchat:" + this.getUser() + ":" + user));
+    }
+    
+    /**
+     * Parts a private chat with the specified user.
+     * @param user The user to chat with.
+     */
+    public void doPartPrivateChat(String user) {
+        dC.writeData(buildPacket(1, "part pchat:" + user + ":" + this.getUser()));
+        dC.writeData(buildPacket(1, "part pchat:" + this.getUser() + ":" + user));
     }
     
     /**
