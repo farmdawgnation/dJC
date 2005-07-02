@@ -162,22 +162,36 @@ public class damnProtocol {
                     dJ.echoChat(infotext, "*** " + fromtext + " " + tmpBox[5]);
                 } else if(tmpBox[2].startsWith("join ")) {
                     String[] whoisit = tmpBox[2].split(" ");
+                    String[] show = tmpBox[3].split("=");
                     String[] privclass = tmpBox[5].split("=");
                     String[] symbol = tmpBox[7].split("=", 2);
                     String infotext= tmpBox[0].split(":")[1];
                     if(infotext == getUser() && tmpBox[0].split(":").length == 3) {
                         infotext = tmpBox[0].split(":")[2];
                     }
-                    dJ.echoChat(infotext, "** " + whoisit[1] + " has joined.");
+                    if(show[1].equalsIgnoreCase("1") || conf.getShownotices()) {
+                        dJ.echoChat(infotext, "** " + whoisit[1] + " has joined.");
+                    }
                     dJ.getChatMemberList(infotext).addUser(whoisit[1], symbol[1], privclass[1]);
                     dJ.getChatMemberList(infotext).generateHtml();
                 } else if(tmpBox[2].startsWith("part ")) {
                     String[] whoisit = tmpBox[2].split(" ");
+                    String show = tmpBox[3].split("=")[1];
+                    String reason = new String();
+                    if(tmpBox.length == 5) {
+                        reason = tmpBox[4].split("=")[1];
+                    }
                     String infotext = tmpBox[0].split(":")[1];
                     if(infotext == getUser() && tmpBox[0].split(":").length == 3) {
                         infotext = tmpBox[0].split(":")[2];
                     }
-                    dJ.echoChat(infotext, "** " + whoisit[1] + " has left.");
+                    if(show.equals("1") || conf.getShownotices()) {
+                        if(tmpBox.length < 5) {
+                            dJ.echoChat(infotext, "** " + whoisit[1] + " has left.");
+                        } else {
+                            dJ.echoChat(infotext, "** " + whoisit[1] + " has left. [" + reason + "]");
+                        }
+                    }
                     dJ.getChatMemberList(infotext).delUser(whoisit[1]);
                     dJ.getChatMemberList(infotext).generateHtml();
                 } else if(tmpBox[2].startsWith("kicked ")) {
@@ -196,6 +210,14 @@ public class damnProtocol {
                     dJ.getChatMemberList(channel).setClass(who, newclass);
                     dJ.getChatMemberList(channel).generateHtml();
                     dJ.echoChat(channel, "** " + who + " has been made a member of " + newclass + " by " + bywho + " **");
+                } else if(tmpBox[2].startsWith("admin update")) {
+                    String channel = tmpBox[0].split(":")[1];
+                    String prop = tmpBox[3].split("=")[1];
+                    String who = tmpBox[4].split("=")[1];
+                    String name = tmpBox[5].split("=")[1];
+                    String privs = tmpBox[6].split("=")[1];
+                    
+                    dJ.echoChat(channel, "** " + prop + " " + name + " has been updated by " + who + " with: " + privs + " **");
                 }
             } else if(tmpBox[0].startsWith("join ")) {
                 if(tmpBox[0].split(" ")[1].startsWith("chat")) {
@@ -203,7 +225,9 @@ public class damnProtocol {
                     String lineb[] = tmpBox[1].split("=");
 
                     if(lineb[1].equalsIgnoreCase("ok")) {
-                        dJ.createChat(0, linea[1]);
+                        if(!dJ.chatExists(linea[1])) {
+                            dJ.createChat(0, linea[1]);
+                        }
                         dJ.terminalEcho(0, "Successfully joined #" + linea[1]);
                     } else if(lineb[1].equalsIgnoreCase("chatroom doesn't exist")) {
                         dJ.terminalEcho(0, "Chat room does not exist.");
@@ -247,13 +271,22 @@ public class damnProtocol {
                 String linea[] = tmpBox[0].split(":");
                 String lineb[] = tmpBox[1].split("=");
                 
-                dJ.deleteChat(linea[1]);
-                if(tmpBox.length == 3) {
-                    dJ.terminalEcho(0, "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * " + tmpBox[2]);
+                if(!conf.getAutorejoin() || tmpBox[3] == "not privileged") {
+                    dJ.deleteChat(linea[1]);
+                    if(tmpBox.length == 4) {
+                        dJ.terminalEcho(0, "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * " + tmpBox[3]);
+                    } else {
+                        dJ.terminalEcho(0, "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * ");
+                    }
                 } else {
-                    dJ.terminalEcho(0, "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * ");
+                    if(tmpBox.length == 4) {
+                        dJ.echoChat(linea[1], "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * " + tmpBox[3]);
+                    } else {
+                        dJ.echoChat(linea[1], "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * ");
+                    }
+                    doJoinChannel(linea[1]);
+                    dJ.echoChat(linea[1], "Rejoined.");
                 }
-                dJ.changeSelectedTab(0);
             } else if(tmpBox[0].startsWith("property chat:")) {
                 String linea[] = tmpBox[0].split(":");
                 String lineb[] = tmpBox[1].split("=");

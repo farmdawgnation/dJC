@@ -288,7 +288,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
      * @param channel The name of the channel.
      * @return The index of the chat page in the list. Returns -1 if no such page exists.
      */
-    private int findPages(String channel) {
+    public int findPages(String channel) {
         String select;
         for(int i=0; i<channelList.size(); i++) {
             select = channelList.get(i);

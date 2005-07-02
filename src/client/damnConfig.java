@@ -51,6 +51,8 @@ public final class damnConfig {
     private String _password= "";
     private String _host = "";
     private int _port;
+    private int _autorejoin;
+    private int _shownotices;
     private final Set<String> _channels = new HashSet<String>();
     
     /** Creates a new instance of damnConfig */
@@ -141,6 +143,54 @@ public final class damnConfig {
     }
     
     /**
+     * Gets the current auto rejoin setting.
+     * @return TRUE if set, FALSE otherwise.
+     */
+    public boolean getAutorejoin() {
+        if(this._autorejoin == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Sets the auto rejoin.
+     * @param _autorejoin Must be set to true to enable, false to disable.
+     */
+    public void setAutorejoin(boolean _autorejoin) {
+        if(_autorejoin == true) {
+            this._autorejoin = 1;
+        } else {
+            this._autorejoin = 0;
+        }
+    }
+    
+    /**
+     * Gets the always show notices setting.
+     * @return TRUE if set, FALSE otherwise.
+     */
+    public boolean getShownotices() {
+        if(_shownotices == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Sets the show notices setting.
+     * @param _shownotices Must be set to true to enable, false to disable.
+     */
+    public void setShownotices(boolean _shownotices) {
+        if(_shownotices == true) {
+            this._shownotices = 1;
+        } else {
+            this._shownotices = 0;
+        }
+    }
+    
+    /**
      * Adds a channel to the configuration
      * @param channel Channel to be added
      */
@@ -205,6 +255,18 @@ public final class damnConfig {
         } catch (NumberFormatException ne) {
             throw new InvalidXMLException("bad port "+port);
         }
+        String autorejoin = attributes.getNamedItem("autorejoin").getNodeValue();
+        try {
+            _autorejoin = Integer.parseInt(autorejoin);
+        } catch (NumberFormatException ne) {
+            throw new InvalidXMLException("bad autorejoin");
+        }
+        String shownotices = attributes.getNamedItem("shownotices").getNodeValue();
+        try {
+            _shownotices = Integer.parseInt(shownotices);
+        } catch (NumberFormatException ne) {
+            throw new InvalidXMLException("bad shownotices");
+        }
         _channels.clear();
         NodeList childList = configNode.getChildNodes();
         for (int i = 0; i < childList.getLength(); i++) {
@@ -229,6 +291,8 @@ public final class damnConfig {
         connection_elem.setAttribute("password", Crypto.encrypt(_password));
         connection_elem.setAttribute("host", _host);
         connection_elem.setAttribute("port", Integer.toString(_port));
+        connection_elem.setAttribute("autorejoin", Integer.toString(_autorejoin));
+        connection_elem.setAttribute("shownotices", Integer.toString(_shownotices));
         
         Iterator<String> iter = _channels.iterator();
         while (iter.hasNext()) {

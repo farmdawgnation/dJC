@@ -32,6 +32,8 @@ public class damnProperties implements ActionListener {
     private JTextField autojoinField;
     private JButton saveButton;
     private JButton cancelButton;
+    private JCheckBox autorejoinBox;
+    private JCheckBox shownoticesBox;
     private damnConfig conf;
     
     /** Creates a new instance of damnProperties */
@@ -49,6 +51,8 @@ public class damnProperties implements ActionListener {
         portField = new JTextField(20);
         autojoinLabel = new JLabel("Auto-Joins:");
         autojoinField = new JTextField(20);
+        autorejoinBox = new JCheckBox("Auto-Rejoin");
+        shownoticesBox = new JCheckBox("Always Show Notices");
         saveButton = new JButton("Save");
         saveButton.addActionListener(this);
         cancelButton = new JButton("Cancel");
@@ -98,6 +102,13 @@ public class damnProperties implements ActionListener {
         panel.add(autojoinPanel);
         panel.add(Box.createRigidArea(new Dimension(0, 5)));
         
+        JPanel optionsPanel = new JPanel();
+        optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.LINE_AXIS));
+        optionsPanel.add(autorejoinBox);
+        optionsPanel.add(shownoticesBox);
+        panel.add(optionsPanel);
+        panel.add(Box.createRigidArea(new Dimension(0, 5)));
+        
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
         buttonPanel.add(saveButton);
@@ -126,6 +137,8 @@ public class damnProperties implements ActionListener {
         }
         
         autojoinField.setText(autojoinval.toString());
+        autorejoinBox.setSelected(conf.getAutorejoin());
+        shownoticesBox.setSelected(conf.getShownotices());
         
         frame.setVisible(true);
     }
@@ -136,6 +149,8 @@ public class damnProperties implements ActionListener {
             conf.setPort(3900);
             conf.setUser(usernameField.getText());
             conf.setPassword(passwordField.getText());
+            conf.setAutorejoin(autorejoinBox.isSelected());
+            conf.setShownotices(shownoticesBox.isSelected());
             
             conf.clearChannels();
             if(autojoinField.getText() != "") {

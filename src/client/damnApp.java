@@ -264,6 +264,18 @@ public class damnApp {
     }
     
     /**
+     * Will check if a chat page exists for a channel.
+     * @param chat The chat.
+     */
+    public boolean chatExists(String chat) {
+        if(dCP.findPages(chat) != -1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
      * Passes along the set selected command.
      * @param index The index of the tab to select.
      */
