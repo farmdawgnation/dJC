@@ -198,7 +198,7 @@ public class damnProtocol {
                     String[] whoisit = tmpBox[2].split(" ");
                     String[] kicker = tmpBox[3].split("=");
                     String[] infotext = tmpBox[0].split(":");
-                    dJ.echoChat(infotext[1], "** " + whoisit[1] + "has been kicked by " + kicker[1] + " ** " + tmpBox[6]);
+                    dJ.echoChat(infotext[1], processTablumps("<b>** " + whoisit[1] + " has been kicked by " + kicker[1] + " ** " + tmpBox[6] + "</b>"));
                     dJ.getChatMemberList(infotext[1]).delUser(whoisit[1]);
                     dJ.getChatMemberList(infotext[1]).generateHtml();
                 } else if(tmpBox[2].startsWith("privchg ")) {
@@ -209,7 +209,7 @@ public class damnProtocol {
                     
                     dJ.getChatMemberList(channel).setClass(who, newclass);
                     dJ.getChatMemberList(channel).generateHtml();
-                    dJ.echoChat(channel, "** " + who + " has been made a member of " + newclass + " by " + bywho + " **");
+                    dJ.echoChat(channel, "<b>** " + who + " has been made a member of " + newclass + " by " + bywho + " **</b>");
                 } else if(tmpBox[2].startsWith("admin update")) {
                     String channel = tmpBox[0].split(":")[1];
                     String prop = tmpBox[3].split("=")[1];
@@ -217,7 +217,38 @@ public class damnProtocol {
                     String name = tmpBox[5].split("=")[1];
                     String privs = tmpBox[6].split("=")[1];
                     
-                    dJ.echoChat(channel, "** " + prop + " " + name + " has been updated by " + who + " with: " + privs + " **");
+                    dJ.echoChat(channel, "<b>** " + prop + " " + name + " has been updated by " + who + " with: " + privs + " **</b>");
+                } else if(tmpBox[2].equalsIgnoreCase("admin show")) {
+                    String channel = tmpBox[0].split(":")[1];
+                    dJ.echoChat(channel, "<b>** Administrative Information: "+ tmpBox[3].split("=")[1] + " **</b>");
+
+                    for(int i=5;i<tmpBox.length-1;i++) {
+                        dJ.echoChat(channel, "<b>" + tmpBox[i] + "</b>");
+                    }
+
+                    dJ.echoChat(channel, "<b>** End Administrative Information **</b>");
+                } else if(tmpBox[2].equalsIgnoreCase("admin create")) {
+                    String channel = tmpBox[0].split(":")[1];
+                    String property = tmpBox[3].split("=")[1];
+                    String who = tmpBox[4].split("=")[1];
+                    String name = tmpBox[5].split("=")[1];
+                    String privs = tmpBox[6].split("=")[1];
+                    
+                    dJ.echoChat(channel, "<b>** Priviledge class " + name + " has been created by " + who + " with privs: " + privs + " **</b>");
+                } else if(tmpBox[2].equalsIgnoreCase("admin remove")) {
+                    String channel = tmpBox[0].split(":")[1];
+                    String property = tmpBox[3].split("=")[1];
+                    String who = tmpBox[4].split("=")[1];
+                    String name = tmpBox[5].split("=")[1];
+                    
+                    dJ.echoChat(channel, "<b>** Priviledge class " + name + " has been removed by " + who + " **</b>");
+                } else if(tmpBox[2].equalsIgnoreCase("admin privclass")) {
+                    String channel = tmpBox[0].split(":")[1];
+                    String prop = tmpBox[3].split("=")[1];
+                    String event = tmpBox[4].split("=")[1];
+                    String command = tmpBox[6];
+                    
+                    dJ.echoChat(channel, "<b><em>(admin " + prop + " error): " + event + " (" + command + ")</em></b>");
                 }
             } else if(tmpBox[0].startsWith("join ")) {
                 if(tmpBox[0].split(" ")[1].startsWith("chat")) {
@@ -231,6 +262,12 @@ public class damnProtocol {
                         dJ.terminalEcho(0, "Successfully joined #" + linea[1]);
                     } else if(lineb[1].equalsIgnoreCase("chatroom doesn't exist")) {
                         dJ.terminalEcho(0, "Chat room does not exist.");
+                    } else if(lineb[1].equalsIgnoreCase("not privileged")) {
+                        if(dJ.chatExists(linea[1])) {
+                            dJ.echoChat(linea[1], "Join Error: Not Privileged");
+                        } else {
+                            dJ.terminalEcho(0, "Join Error (#" + linea[1] + "): Not Privileged");
+                        }
                     }
                 } else if(tmpBox[0].split(" ")[1].startsWith("pchat")) {
                     String linea = tmpBox[0].split(":")[1];
@@ -264,6 +301,8 @@ public class damnProtocol {
                     } else {
                         dJ.terminalEcho(0, "Successfully parted #" + linea[1] + " [" + linec[1] + "]");
                     }
+                } else if(lineb[1].equalsIgnoreCase("not joined")) {
+                    if(dJ.chatExists(linea[1])) dJ.deleteChat(linea[1]);
                 } else {
                     dJ.terminalEcho(0, "Unreconized Error: " + lineb[1]);
                 }
@@ -272,20 +311,19 @@ public class damnProtocol {
                 String lineb[] = tmpBox[1].split("=");
                 
                 if(!conf.getAutorejoin() || tmpBox[3] == "not privileged") {
-                    dJ.deleteChat(linea[1]);
                     if(tmpBox.length == 4) {
-                        dJ.terminalEcho(0, "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * " + tmpBox[3]);
+                        dJ.echoChat(linea[1], "<b>You have been kicked from #" + linea[1] + " by " + lineb[1] + " * " + processTablumps(tmpBox[3]) + "</b>");
                     } else {
-                        dJ.terminalEcho(0, "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * ");
+                        dJ.echoChat(linea[1], "<b>You have been kicked from #" + linea[1] + " by " + lineb[1] + " * </b>");
                     }
                 } else {
                     if(tmpBox.length == 4) {
-                        dJ.echoChat(linea[1], "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * " + tmpBox[3]);
+                        dJ.echoChat(linea[1], "<b>You have been kicked from #" + linea[1] + " by " + lineb[1] + " * " + processTablumps(tmpBox[3]) + "</b>");
                     } else {
-                        dJ.echoChat(linea[1], "You have been kicked from #" + linea[1] + " by " + lineb[1] + " * ");
+                        dJ.echoChat(linea[1], "<b>You have been kicked from #" + linea[1] + " by " + lineb[1] + " * </b>");
                     }
                     doJoinChannel(linea[1]);
-                    dJ.echoChat(linea[1], "Rejoined.");
+                    dJ.echoChat(linea[1], "Attempting to rejoin...");
                 }
             } else if(tmpBox[0].startsWith("property chat:")) {
                 String linea[] = tmpBox[0].split(":");
@@ -322,7 +360,7 @@ public class damnProtocol {
                     }
                 } 
             } else if(tmpBox[0].startsWith("property login:")) {
-                    dJ.terminalEcho(1, "User infos: ");
+                    //dJ.terminalEcho(1, "User infos: ");
                     for (int i=0; i<11; i++) {
                         whoisInfo[i] = tmpBox[i+1];
                         dJ.terminalEcho(1, tmpBox[i+1]);
@@ -352,10 +390,10 @@ public class damnProtocol {
      */
     public void doHandshake() {
         //Initial Handshake
-        dC.writeData(buildPacket(1, "dAmnClient 0.2", "agent=dJC-0.2"));
-        dJ.terminalEcho(1, "dAmnClient 0.2....");
+        dC.writeData(buildPacket(1, "dAmnClient 0.2", "agent=dJC-0.5-pre1"));
+        dJ.terminalEcho(0, "Sending Version Information...");
         dC.writeData(buildPacket(1, "login " + username, "pk=" + password));
-        dJ.terminalEcho(1, "login...");
+        dJ.terminalEcho(0, "Sending Login...");
     }
     
     /**
@@ -534,7 +572,7 @@ public class damnProtocol {
         if(rawdata.indexOf("&emote\t") != -1) {
             thePattern = Pattern.compile("&emote\t([^\t]+)\t([0-9]+)\t([0-9]+)\t([^\t]*)\t([^\t]+)\t");
             theMatcher = thePattern.matcher(rawdata);
-            rawdata = theMatcher.replaceAll("<img src=\"http://e.deviantart.com/emoticons/$5\" alt=\"$4\">");
+            rawdata = theMatcher.replaceAll("<img width=\"$2\" height=\"$3\" src=\"http://e.deviantart.com/emoticons/$5\" alt=\"$4\">");
         }
 
          // Thumbnails
@@ -556,10 +594,10 @@ public class damnProtocol {
                     //http://www.deviantart.com/view/15696906
                     if (Width>Height) { nw = 100;  nh = 100 * Height / Width; }
                     else { nh = 100; nw = 100 * Width / Height; }
-                    String link = "<a href=\"www.deviantart.com/view/$1\">";
-                    rawdata = theMatcher.replaceFirst("<td class=\"tn\"><a href=\"www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\" ></a></td>");
+                    String link = "<a href=\"http://www.deviantart.com/view/$1\">";
+                    rawdata = theMatcher.replaceFirst("<td class=\"tn\"><a href=\"http://www.deviantart.com/view/$1\"><img src=\"http://tn$6.deviantart.com/100/"+url+"\" width=\""+nw+"\" height=\""+nh+"\" ></a></td>");
                 } else {
-                    rawdata = theMatcher.replaceFirst("<a href=\"www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\" border=\"0\"></a>");
+                    rawdata = theMatcher.replaceFirst("<a href=\"http://www.deviantart.com/view/$1\"><img src=\"http://"+url+"\" width=\""+Width+"\" height=\""+Height+"\" border=\"0\"></a>");
                 }
                 
                 theMatcher = thePattern.matcher(rawdata);
@@ -575,9 +613,9 @@ public class damnProtocol {
                 String[] types = {"gif","gif","jpg"};
                 int type = Integer.parseInt(theMatcher.group(2));
                 if (type > 0)
-                    rawdata = theMatcher.replaceAll("<a href=\""+name+"\"><img src=\"http://a.deviantart.com/avatars/"+name.charAt(0)+"/"+name.charAt(1)+"/"+name+"."+types[type]+"\"></a>");
+                    rawdata = theMatcher.replaceAll("<a href=\"http://"+name+".deviantart.com/\"><img height=\"50\" width=\"50\" src=\"http://a.deviantart.com/avatars/"+name.charAt(0)+"/"+name.charAt(1)+"/"+name+"."+types[type]+"\"></a>");
                 else
-                    rawdata = theMatcher.replaceAll("<img src=\"http://a.deviantart.com/avatars/default.gif\">");
+                    rawdata = theMatcher.replaceAll("<a href=\"http://" + name + ".deviantart.com/\"><img height=\"50\" width=\"50\" src=\"http://a.deviantart.com/avatars/default.gif\"></a>");
                 
                 theMatcher = thePattern.matcher(rawdata);
             }

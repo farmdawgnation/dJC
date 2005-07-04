@@ -30,6 +30,8 @@ public class damnProperties implements ActionListener {
     private JTextField portField;
     private JLabel autojoinLabel;
     private JTextField autojoinField;
+    private JLabel browsercommandLabel;
+    private JTextField browsercommandField;
     private JButton saveButton;
     private JButton cancelButton;
     private JCheckBox autorejoinBox;
@@ -47,10 +49,12 @@ public class damnProperties implements ActionListener {
         passwordField.setEchoChar('*');
         serverLabel = new JLabel("Server:");
         serverField = new JTextField(20);
-        portLabel = new JLabel("Port:");
+        portLabel = new JLabel("Port (Def: 3900):");
         portField = new JTextField(20);
         autojoinLabel = new JLabel("Auto-Joins:");
         autojoinField = new JTextField(20);
+        browsercommandLabel = new JLabel("Browser Command:");
+        browsercommandField = new JTextField(20);
         autorejoinBox = new JCheckBox("Auto-Rejoin");
         shownoticesBox = new JCheckBox("Always Show Notices");
         saveButton = new JButton("Save");
@@ -102,6 +106,13 @@ public class damnProperties implements ActionListener {
         panel.add(autojoinPanel);
         panel.add(Box.createRigidArea(new Dimension(0, 5)));
         
+        JPanel browserPanel = new JPanel();
+        browserPanel.setLayout(new BoxLayout(browserPanel, BoxLayout.LINE_AXIS));
+        browserPanel.add(browsercommandLabel);
+        browserPanel.add(browsercommandField);
+        panel.add(browserPanel);
+        panel.add(Box.createRigidArea(new Dimension(0, 5)));
+        
         JPanel optionsPanel = new JPanel();
         optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.LINE_AXIS));
         optionsPanel.add(autorejoinBox);
@@ -137,6 +148,7 @@ public class damnProperties implements ActionListener {
         }
         
         autojoinField.setText(autojoinval.toString());
+        browsercommandField.setText(conf.getBrowsercommand());
         autorejoinBox.setSelected(conf.getAutorejoin());
         shownoticesBox.setSelected(conf.getShownotices());
         
@@ -146,9 +158,14 @@ public class damnProperties implements ActionListener {
     public void actionPerformed(ActionEvent actionEvent) {
         if(actionEvent.getSource() == saveButton) {
             conf.setHost(serverField.getText());
-            conf.setPort(3900);
+            if(!portField.getText().equalsIgnoreCase("")) {
+                conf.setPort(Integer.parseInt(portField.getText()));
+            } else {
+                conf.setPort(3900);
+            }
             conf.setUser(usernameField.getText());
             conf.setPassword(passwordField.getText());
+            conf.setBrowsercommand(browsercommandField.getText());
             conf.setAutorejoin(autorejoinBox.isSelected());
             conf.setShownotices(shownoticesBox.isSelected());
             

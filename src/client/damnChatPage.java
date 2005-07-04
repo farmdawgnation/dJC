@@ -348,11 +348,15 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
 
     public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
         if(hyperlinkEvent.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-            /*try {
-                Runtime.getRuntime().exec("config.xml");
+            try {
+                if(hyperlinkEvent.getURL().toString() != null) {
+                    Runtime.getRuntime().exec(dJ.browserCommand() + " " + hyperlinkEvent.getURL().toString());
+                } else {
+                    System.out.println("NULL URL!");
+                }
             } catch(IOException e) {
                 e.printStackTrace();
-            }*/
+            }
         }
     }
 

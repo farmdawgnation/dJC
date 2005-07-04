@@ -284,6 +284,14 @@ public class damnApp {
     }
     
     /**
+     * Gets the current browser command.
+     * @return The current browser command setting.
+     */
+    public String browserCommand() {
+        return conf.getBrowsercommand();
+    }
+    
+    /**
      * This method preforms all startup operations for the program.
      */
     public void go() {

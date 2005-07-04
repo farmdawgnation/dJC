@@ -51,6 +51,7 @@ public final class damnConfig {
     private String _password= "";
     private String _host = "";
     private int _port;
+    private String _browsercommand = "";
     private int _autorejoin;
     private int _shownotices;
     private final Set<String> _channels = new HashSet<String>();
@@ -140,6 +141,22 @@ public final class damnConfig {
     public void setPort(int _port) {
         this._port = _port;
         String port = Integer.toString(_port);
+    }
+    
+    /**
+     * Gets the current browser command.
+     * @return Current browser command.
+     */
+    public String getBrowsercommand() {
+        return _browsercommand;
+    }
+    
+    /**
+     * Sets the browser command.
+     * @param _browsercommand The browser command to set to.
+     */
+    public void setBrowsercommand(String _browsercommand) {
+        this._browsercommand = _browsercommand;
     }
     
     /**
@@ -255,6 +272,7 @@ public final class damnConfig {
         } catch (NumberFormatException ne) {
             throw new InvalidXMLException("bad port "+port);
         }
+        _browsercommand = attributes.getNamedItem("browsercommand").getNodeValue();
         String autorejoin = attributes.getNamedItem("autorejoin").getNodeValue();
         try {
             _autorejoin = Integer.parseInt(autorejoin);
@@ -291,6 +309,7 @@ public final class damnConfig {
         connection_elem.setAttribute("password", Crypto.encrypt(_password));
         connection_elem.setAttribute("host", _host);
         connection_elem.setAttribute("port", Integer.toString(_port));
+        connection_elem.setAttribute("browsercommand", _browsercommand);
         connection_elem.setAttribute("autorejoin", Integer.toString(_autorejoin));
         connection_elem.setAttribute("shownotices", Integer.toString(_shownotices));
         
