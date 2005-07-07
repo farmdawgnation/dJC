@@ -180,7 +180,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
             } else if(chatField.getText().startsWith("/kick ")) {
                 String channel = channelList.get(chatFields.indexOf(e.getSource()));
                 String comparts[] = chatField.getText().split(" ", 3);
-                if(comparts[2] != null) {
+                if(comparts.length == 3) {
                     dP.doKick(channel, comparts[1], comparts[2]);
                 } else {
                     dP.doKick(channel, comparts[1], " ");

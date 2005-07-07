@@ -156,12 +156,16 @@ public class damnProtocol {
                 } else if(damnPacket.get("command").startsWith("recv ") && !damnPacket.containsKey("type") &&
                         !splitPacket[i].equalsIgnoreCase("")) {
                     damnPacket.put("type", splitPacket[i]);
-                } else if(damnPacket.containsKey("type") && damnPacket.containsKey("p")) {
-                    if(damnPacket.get("type").equals("admin show")) {
-                        String[] showPacket = data.split("\n\n", 3);
-                        damnPacket.put("value", showPacket[2]);
+                } else if(damnPacket.containsKey("type") && damnPacket.get("type").indexOf("main") == -1 &&
+                        damnPacket.get("type").equals("admin show") && damnPacket.containsKey("p")) {
+                    String[] showPacket = data.split("\n\n", 3);
+                    damnPacket.put("value", showPacket[2]);
+                    break;
+                } else if(damnPacket.containsKey("type") && damnPacket.get("type").indexOf("main") == -1 &&
+                        damnPacket.get("type").startsWith("kicked ") && damnPacket.containsKey("by") && damnPacket.containsKey("i")) {
+                        String[] kickPacket = data.split("\n\n", 3);
+                        damnPacket.put("value", kickPacket[2]);
                         break;
-                    }
                 } else {
                     if((!splitPacket[i].equalsIgnoreCase("") && splitPacket[i].indexOf("=") == -1) ||
                             (splitPacket[0].startsWith("recv ") && damnPacket.containsKey("type") && damnPacket.containsKey("from"))) {
@@ -267,7 +271,14 @@ public class damnProtocol {
                     String whoisit = damnPacket.get("type").split(" ")[1];
                     String kicker = damnPacket.get("by");
                     String infotext = damnPacket.get("command").split(":")[1];
-                    dCP.echoChat(infotext, processTablumps("<b>** " + whoisit + " has been kicked by " + kicker + " ** " + damnPacket.get("value") + "</b>"));
+                    
+                    if(damnPacket.get("i").equals("1") || conf.getShownotices()) {
+                        if(damnPacket.containsKey("value")) {
+                            dCP.echoChat(infotext, processTablumps("<b>** " + whoisit + " has been kicked by " + kicker + " * " + damnPacket.get("value") + "</b>"));
+                        } else {
+                            dCP.echoChat(infotext, processTablumps("<b>** " + whoisit + " has been kicked by " + kicker + " *</b>"));
+                        }
+                    }
                     dCP.getMemberList(infotext).delUser(whoisit);
                     dCP.getMemberList(infotext).generateHtml();
                 } else if(damnPacket.get("type").startsWith("privchg ")) {
@@ -278,7 +289,8 @@ public class damnProtocol {
                     
                     dCP.getMemberList(channel).setClass(who, newclass);
                     dCP.getMemberList(channel).generateHtml();
-                    dCP.echoChat(channel, "<b>** " + who + " has been made a member of " + newclass + " by " + bywho + " **</b>");
+                    if(damnPacket.get("i").equals("1") || conf.getShownotices())
+                        dCP.echoChat(channel, "<b>** " + who + " has been made a member of " + newclass + " by " + bywho + " **</b>");
                 } else if(damnPacket.get("type").startsWith("admin update")) {
                     String channel = damnPacket.get("command").split(":")[1];
                     String prop = damnPacket.get("p");
@@ -400,17 +412,17 @@ public class damnProtocol {
                 String who = damnPacket.get("by");
                 String value = damnPacket.get("value");
                 
-                if(!conf.getAutorejoin() || (damnPacket.containsKey("r") && damnPacket.get("r").equals("not privileged"))) {
-                    if(damnPacket.containsKey("r")) {
-                        dCP.echoChat(channel, "<b>You have been kicked from #" + channel + " by " + who + " * " + processTablumps(value) + "</b>");
+                if(!conf.getAutorejoin() || (damnPacket.containsKey("value") && damnPacket.get("value").equals("not privileged"))) {
+                    if(damnPacket.containsKey("value")) {
+                        dCP.echoChat(channel, "<b>** You have been kicked from #" + channel + " by " + who + " * " + processTablumps(value) + "</b>");
                     } else {
-                        dCP.echoChat(channel, "<b>You have been kicked from #" + channel + " by " + who + " * </b>");
+                        dCP.echoChat(channel, "<b>** You have been kicked from #" + channel + " by " + who + " * </b>");
                     }
                 } else {
-                    if(damnPacket.containsKey("r")) {
-                        dCP.echoChat(channel, "<b>You have been kicked from #" + channel + " by " + who + " * " + processTablumps(value) + "</b>");
+                    if(damnPacket.containsKey("value")) {
+                        dCP.echoChat(channel, "<b>** You have been kicked from #" + channel + " by " + who + " * " + processTablumps(value) + "</b>");
                     } else {
-                        dCP.echoChat(channel, "<b>You have been kicked from #" + channel + " by " + who + " * </b>");
+                        dCP.echoChat(channel, "<b>** You have been kicked from #" + channel + " by " + who + " * </b>");
                     }
                     doJoinChannel(channel);
                     dCP.echoChat(channel, "Attempting to rejoin...");
