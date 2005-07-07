@@ -19,6 +19,7 @@ import javax.swing.*;
  */
 public class damnApp {
     private int connected=0;
+    private String version = "0.5-pre1";
     private damnProtocol protocol;
     private Thread socketThread;
     private Runnable commRunnable;
@@ -60,60 +61,14 @@ public class damnApp {
                 dJgui.getServerTerminal().append("<<< " + data + "\n");
                 break;
         }
+        dJgui.getServerTerminal().setCaretPosition(dJgui.getServerTerminal().getDocument().getLength());
     }
-    
-    /**
-     * Creates a chat page.
-     * @param chatname The name of the channel the page is being created for.
-     * @see client.damnChatPage#addChatPage
-     */
-    public void createChat(int priv, String chatname) {
-        dCP.addChatPage(priv, chatname);
-    }
-    
-    /**
-     * Deletes a chat page.
-     * @param chatname The name of the channel who's page needs to be deleted.
-     * @see client.damnChatPage#delChatPage
-     */
-    public void deleteChat(String chatname) {
-        dCP.delChatPage(chatname, dJgui.getTabbedPane());
-    }
-    
-    /**
-     * Fetches the chat member list for the specified channel.
-     * @param chatname The name of the channel.
-     * @return A DefaultListModel object which is the model for the member list.
-     */
-    public damnChatMemberList getChatMemberList(String chatname) {
-        return dCP.getMemberList(chatname);
-    }
-    
-    /**
-     * Calls the damnChatPage function to write information to a
-     * chat window.
-     * @param chatname The name of the channel to send to.
-     * @param user The user who sent the message
-     * @param message Doh! The message!
-     */
-    public synchronized void echoChat(String chatname, String user, String message) {
-        dCP.echoChat(chatname, user, message);
-    }
-    
+
     /**
      * Forwards messages to damnAppGUI handler.
      */
     public void actionPerformed(java.awt.event.ActionEvent e) {
         dJgui.doServerCommand(e);
-    }
-    
-    /**
-     * Calls the damnChatPage function to write information to a chat window.
-     * @param chatname The name of the channel to send to.
-     * @param message Doh!
-     */
-    public synchronized void echoChat(String chatname, String message) {
-        dCP.echoChat(chatname, message);
     }
     
     /**
@@ -128,7 +83,7 @@ public class damnApp {
         }
         
         terminalEcho(0, "Fetching authtoken, please wait...");
-        TokenFetcher tf = new TokenFetcher("www.deviantart.com");
+        TokenFetcher tf = new TokenFetcher("www.deviantart.com", this);
         String authtoken = tf.doTokenFetch(username, password);
         if(authtoken == null) {
             terminalEcho(0, "Error fetching authtoken.");
@@ -240,7 +195,7 @@ public class damnApp {
      */
     public void aboutMoi() {
         terminalEcho(0, "");
-        terminalEcho(0, "dJC: The dAmn Java Client");
+        terminalEcho(0, "dJC: The dAmn Java Client " + version);
         terminalEcho(0, "http://www.sourceforge.net/projects/damnjava");
         terminalEcho(0, "");
         terminalEcho(0, "Written by...");
@@ -251,6 +206,81 @@ public class damnApp {
         terminalEcho(0, "If you are interested in getting involved: Let MSF know.");
         terminalEcho(0, "Now back to your regularly scheduled programming...");
         terminalEcho(0, "");
+    }
+    
+    /**
+     * Simple little built-in Help System.
+     * @param command The command to print help info for. If blank prints command list.
+     */
+    public void showHelp(String command) {
+        if(command == "") {
+            terminalEcho(0, "");
+            terminalEcho(0, "dJC Core Command List:");
+            terminalEcho(0, "connect, tokenconnect, join, part, jpchat, ppchat, disconnect, away, back");
+            terminalEcho(0, "Type \"/help [command]\" for more information about each command.");
+            terminalEcho(0, "");
+        } else if(command.equalsIgnoreCase("connect")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "USAGE: /connect [username] [password]");
+            terminalEcho(0, "\tThis command will connect you to the server with your username and password.");
+            terminalEcho(0, "\tIt is reccomended to use the File->Connect menu option since that listens to");
+            terminalEcho(0, "\tyour preferences.");
+            terminalEcho(0, "");
+        } else if(command.equalsIgnoreCase("tokenconnect")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "USAGE: /tokenconnect [username] [authtoken]");
+            terminalEcho(0, "\tIf the normal username and password connect system is unable to fetch your");
+            terminalEcho(0, "\tauthtoken from deviantart.com for some reason, then you will have to know");
+            terminalEcho(0, "\tyour authtoken to be able to get into dAmn. If you do then just use this");
+            terminalEcho(0, "\tcommand and drop in the appropreate values and VOILA! You're in!");
+            terminalEcho(0, "");
+        } else if(command.equalsIgnoreCase("join")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "USAGE: /join [channel]");
+            terminalEcho(0, "\tUse this command to join a channel. Please do not include the # in front of");
+            terminalEcho(0, "\tthe channel name. It will cause an error.");
+            terminalEcho(0, "");
+        } else if(command.equalsIgnoreCase("part")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "USAGE: /part [channel]");
+            terminalEcho(0, "\tUse this command to leave a channel. Please do not include the # in front of");
+            terminalEcho(0, "\tthe channel name. It will cause an error.");
+            terminalEcho(0, "");
+        } else if(command.equalsIgnoreCase("jpchat")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "USAGE: /jpchat [username]");
+            terminalEcho(0, "\tUse this to join a private chat with the user specified in the username field.");
+            terminalEcho(0, "\tIMPORTANT: You will have to tell the other user to join the private chat too or");
+            terminalEcho(0, "\tthey will not see your messages. dAmn will not automatically show them the chat.");
+            terminalEcho(0, "\tAlso, this command is unique to dJC. The other user will have to cunsult the");
+            terminalEcho(0, "\tdocumentation for their client to figure out how to join private chats.");
+            terminalEcho(0, "");
+        } else if(command.equalsIgnoreCase("ppchat")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "USAGE: /ppchat [username]");
+            terminalEcho(0, "\tUse this to leave a private chat with the user specified.");
+            terminalEcho(0, "\tThis command is unique to dJC. The other user will have to consult the");
+            terminalEcho(0, "\tdocumentation for their client to figure out how to leave private chats.");
+            terminalEcho(0, "");
+        } else if(command.equalsIgnoreCase("away")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "USAGE: /away [reason]");
+            terminalEcho(0, "\tThis will set you to an away status on dAmn with the reason in the");
+            terminalEcho(0, "\treason field. It is reccomended that you use the menu options to");
+            terminalEcho(0, "\tchange away statuses.");
+            terminalEcho(0, "");
+        } else if(command.equalsIgnoreCase("back")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "USAGE: /back");
+            terminalEcho(0, "This will unset your away status.");
+            terminalEcho(0, "");
+        } else if(command.equalsIgnoreCase("disconnect")) {
+            terminalEcho(0, "");
+            terminalEcho(0, "USAGE: /disconnect");
+            terminalEcho(0, "\tWill disconnect you from the server.");
+            terminalEcho(0, "\tIt is reccomended you use the File->Disconnect option instead.");
+            terminalEcho(0, "");
+        }
     }
     
     /**
@@ -276,19 +306,19 @@ public class damnApp {
     }
     
     /**
-     * Passes along the set selected command.
-     * @param index The index of the tab to select.
-     */
-    public void changeSelectedTab(int index) {
-        dCP.changeSelectedTab(index);
-    }
-    
-    /**
      * Gets the current browser command.
      * @return The current browser command setting.
      */
     public String browserCommand() {
         return conf.getBrowsercommand();
+    }
+    
+    /**
+     * Gets the version setting.
+     * @return A string containing the current version.
+     */
+    public String getVersion() {
+        return version;
     }
     
     /**

@@ -154,7 +154,7 @@ public class damnAppGUI extends JFrame {
         JScrollPane serverScrollPane = new JScrollPane(serverTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         serverPage.add(serverScrollPane, BorderLayout.CENTER);
         
-        serverTerminal.setText("dJC: The dAmn Java Client\nVersion 0.4\n?2005 The dAmn Java Project\nType '/about' for more info.'\n");
+        serverTerminal.setText("dJC: The dAmn Java Client\nVersion " + dJ.getVersion() + "\n(c)2005 The dAmn Java Project\nLicensed under the GNU General Public License\nType '/about' for more info or '/help' for help.\n");
         
         serverCommandField = new JTextField(20);
         serverCommandField.addActionListener(new ActionListener() {
@@ -207,6 +207,12 @@ public class damnAppGUI extends JFrame {
             disconnectItem.setEnabled(false);
         } else if(parts[0].equalsIgnoreCase("/about")) {
             dJ.aboutMoi();
+        } else if(parts[0].equalsIgnoreCase("/help")) {
+            if(parts.length < 2) {
+                dJ.showHelp("");
+            } else {
+                dJ.showHelp(parts[1]);
+            }
         } else if(parts[0].equalsIgnoreCase("/token")) {
             TokenFetcher tf = new TokenFetcher("www.deviantart.com");
 
@@ -233,6 +239,8 @@ public class damnAppGUI extends JFrame {
                 reparts = txtfld.getText().split(" ", 4);
             }
             dJ.passKill(reparts[1], reparts[2], reparts[3]);
+        } else if(parts[0].equalsIgnoreCase("/clear")) {
+            serverTerminal.setText("");
         } else {
             dJ.terminalEcho(0, "Unknown Command.");
         }

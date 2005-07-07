@@ -27,6 +27,8 @@ import javax.swing.text.html.*;
 public class damnChatPage implements ActionListener, HyperlinkListener, KeyListener, ChangeListener {
     private JTabbedPane tabbedPane;
     private ArrayList<JPanel> chatPages;
+    private ArrayList<JEditorPane> chatTitles;
+    private ArrayList<JEditorPane> chatTopics;
     private ArrayList<JEditorPane> chatTerminals;
     private ArrayList<JScrollPane> chatScrollPanes;
     ArrayList<JTextField> chatFields;
@@ -47,7 +49,12 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         dP = protocol;
         dJ = app;
         chatPages = new ArrayList<JPanel>();
+        
+        dP.setChatPage(this);
+        
         chatTerminals = new ArrayList<JEditorPane>();
+        chatTitles = new ArrayList<JEditorPane>();
+        chatTopics = new ArrayList<JEditorPane>();
         chatScrollPanes = new ArrayList<JScrollPane>();
         chatFields = new ArrayList<JTextField>();
         channelList = new ArrayList<String>();
@@ -55,7 +62,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         awaymsg = null;
         defaultHtml = new String("<html><head><style type=\"text/css\">\n a { color:#222222 } \n td.tn { margin-right:2px; margin-left: 2px; margin-top:2px; margin-bottom:2px; } </style>"+
                 "</head><body></body></html><html><head><style type=\"text/css\">\n a { color:#222222 } \n td.tn { margin-right:2px; margin-left: 2px; margin-top:2px; margin-bottom:2px; } </style>"+
-                "</head><body></body></html>");
+                "</head><body>");
     }
     
     /**
@@ -80,17 +87,30 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
             chatPage.setName("<html><body><font color=\"black\">" + chatname + "</font></body></html>");
         }
         
-        JEditorPane chatTerminal = new JEditorPane();
-
+        JEditorPane chatTitle = new JEditorPane();
+        chatTitle.setEditable(false);
+        chatTitle.setContentType("text/html");
+        chatTitle.addHyperlinkListener(this);
+        chatPage.add(chatTitle, BorderLayout.PAGE_START);
         
-        //chatTerminal.setLineWrap(true);
+        JPanel topicTerminalPanel = new JPanel(new BorderLayout(5,5));
+        
+        JEditorPane chatTopic = new JEditorPane();
+        chatTopic.setEditable(false);
+        chatTopic.setContentType("text/html");
+        chatTopic.addHyperlinkListener(this);
+        topicTerminalPanel.add(chatTopic, BorderLayout.PAGE_START);
+        
+        JEditorPane chatTerminal = new JEditorPane();
         chatTerminal.setEditable(false);
         chatTerminal.setContentType("text/html");
         chatTerminal.setText(defaultHtml);
         chatTerminal.addHyperlinkListener(this);
         JScrollPane chatScrollPane = new JScrollPane(chatTerminal, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         chatScrollPane.setAutoscrolls(true);
-        chatPage.add(chatScrollPane, BorderLayout.CENTER);
+        topicTerminalPanel.add(chatScrollPane, BorderLayout.CENTER);
+        
+        chatPage.add(topicTerminalPanel, BorderLayout.CENTER);
         
         JTextField chatField = new JTextField(20);
         chatField.setFocusTraversalKeysEnabled(false);
@@ -102,10 +122,15 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         memberList.generateHtml();
         JScrollPane memberListScrollPane = new JScrollPane(memberList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         chatPage.add(memberListScrollPane, BorderLayout.LINE_END);
+        if(priv == 1) {
+            memberListScrollPane.setVisible(false);
+        }
         
         tabbedPane.add(chatPage);
         
         chatPages.add(chatPage);
+        chatTitles.add(chatTitle);
+        chatTopics.add(chatTopic);
         chatTerminals.add(chatTerminal);
         chatScrollPanes.add(chatScrollPane);
         chatFields.add(chatField);
@@ -122,7 +147,7 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
      * @param chatname The name of the channel to delete the page for.
      * @param tabbedPane a reference to the application's Tabbed Pane.
      */
-    public void delChatPage(String chatname, JTabbedPane tabbedPane) {
+    public void delChatPage(String chatname) {
         int index = findPages(chatname);
         
         tabbedPane.remove(chatPages.get(index));
@@ -131,6 +156,8 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         chatMemberLists.remove(index);
         chatFields.remove(index);
         chatTerminals.remove(index);
+        chatTopics.remove(index);
+        chatTitles.remove(index);
         chatPages.remove(index);
     }
     
@@ -403,5 +430,53 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
      */
     public void changeSelectedTab(int index) {
         tabbedPane.setSelectedIndex(index);
+    }
+    
+    /**
+     * Set the chat title.
+     * @param channel The channel to change the title for.
+     * @param title The title for the channel.
+     */
+    public void setChannelTitle(String channel, String title) {
+        int index = this.findPages(channel);
+        
+        JEditorPane chatTitle = chatTitles.get(index);
+        
+        try {
+            chatTitle.setText(defaultHtml);
+            insertHTML(chatTitle, title, chatTitle.getDocument().getLength());
+        } catch (java.lang.Exception e) {
+            e.printStackTrace();
+        }
+        
+        if(title.equals("")) {
+            chatTitle.setVisible(false);
+        } else {
+            chatTitle.setVisible(true);
+        }
+    }
+    
+    /**
+     * Set the channel topic.
+     * @param channel The channel to change the topic for.
+     * @param topic The topic for the channel.
+     */
+    public void setChannelTopic(String channel, String topic) {
+        int index = this.findPages(channel);
+        
+        JEditorPane chatTopic = chatTopics.get(index);
+        
+        try {
+            chatTopic.setText(defaultHtml);
+            insertHTML(chatTopic, topic, chatTopic.getDocument().getLength());
+        } catch (java.lang.Exception e) {
+            e.printStackTrace();
+        }
+        
+        if(topic.equals("")) {
+            chatTopic.setVisible(false);
+        } else {
+            chatTopic.setVisible(true);
+        }
     }
 }

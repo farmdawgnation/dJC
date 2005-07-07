@@ -83,8 +83,8 @@ public class damnWhois extends javax.swing.JFrame {
                 if (d[0].equals("realname")) jTextField1.setText(d[1]);
                 if (d[0].equals("typename")) jTextField2.setText(d[1]);
                 if (d[0].equals("gpc")) jTextField3.setText(d[1]);
-                if (d[0].equals("online")) jTextField4.setText( String.valueOf( Integer.parseInt(d[1])/60) + " secs");
-                if (d[0].equals("idle")) jTextField5.setText( String.valueOf( Integer.parseInt(d[1])/60) + " secs" );
+                if (d[0].equals("online")) jTextField4.setText( String.valueOf( Integer.parseInt(d[1])) + " seconds");
+                if (d[0].equals("idle")) jTextField5.setText( String.valueOf( Integer.parseInt(d[1])) + " seconds" );
                 if (d[0].equals("usericon")) iconString = d[1];  
             }
 

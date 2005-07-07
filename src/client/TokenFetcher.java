@@ -17,11 +17,13 @@ public class TokenFetcher {
     private BufferedReader reader;
     private String host;
     private int port;
+    private damnApp dJ;
     
     /** Creates a new instance of TokenFetcher */
-    public TokenFetcher(String commHost) {
+    public TokenFetcher(String commHost, damnApp djObj) {
         host = commHost;
         port = 80;
+        dJ = djObj;
     }
     
     public String doTokenFetch(String username, String password) {
@@ -59,6 +61,9 @@ public class TokenFetcher {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            dJ.disconnect();
+            dJ.terminalEcho(0, "Error fetching authtoken. If dJC knows a reason it will appear directly below this message.");
+            dJ.terminalEcho(0, e.getMessage());
         }
         
         return authtoken;
