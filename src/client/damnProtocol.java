@@ -198,6 +198,13 @@ public class damnProtocol {
                 } else {
                     dJ.terminalEcho(0, "Login Unsuccessful, please close connection and try again.");
                 }
+            } else if(damnPacket.get("command").startsWith("send ")) {
+                String channel = damnPacket.get("command").split(":")[1];
+                if(damnPacket.get("command").split(" ")[1].startsWith("pchat:")) {
+                    channel = "pchat:" + channel;
+                }
+                
+                dCP.echoChat(channel, "<em>** " + damnPacket.get("e") + "</em>");
             } else if(damnPacket.get("command").startsWith("recv ")) {
                 if(damnPacket.get("type").equalsIgnoreCase("msg main")) {
                     String value = processTablumps(damnPacket.get("value"));
@@ -323,6 +330,22 @@ public class damnProtocol {
                     String name = damnPacket.get("name");
                     
                     dCP.echoChat(channel, "<b>** Priviledge class " + name + " has been removed by " + who + " **</b>");
+                } else if(damnPacket.get("type").equalsIgnoreCase("admin rename")) {
+                    String channel = damnPacket.get("command").split(":")[1];
+                    String who = damnPacket.get("by");
+                    String prev = damnPacket.get("prev");
+                    String name = damnPacket.get("name");
+                    
+                    dCP.echoChat(channel, "<b>** Priviledge class " + prev + " has been renamed " + name + " by " + who + " **</b>");
+                } else if(damnPacket.get("type").equalsIgnoreCase("admin move")) {
+                    String channel = damnPacket.get("command").split(":")[1];
+                    String who = damnPacket.get("by");
+                    String prop = damnPacket.get("p");
+                    String prev = damnPacket.get("prev");
+                    String name = damnPacket.get("name");
+                    String n = damnPacket.get("n");
+                    
+                    dCP.echoChat(channel, "<b>** All " + prop + " of " + prev + " have been moved to " + name + " by " + who + ". (" + n + " affected) **</b>");
                 } else if(damnPacket.get("type").equalsIgnoreCase("admin privclass")) {
                     String channel = damnPacket.get("command").split(":")[1];
                     String prop = damnPacket.get("p");
@@ -888,8 +911,11 @@ public class damnProtocol {
         if(rawdata.indexOf("&dev") != -1) rawdata = rawdata.replaceAll("&dev\t([^\t])\t([^\t]+)\t",
                 "<a href=\"http://$2.deviantart.com\">$1$2</a>");
         
+        // Acronym Tag
+        // &acro(t)Ravielle(t)hi!&/acro(t)
+        if(rawdata.indexOf("&acro") != -1) rawdata = rawdata.replaceAll("&acro\t([^\t]+)\t([A-Za-z]+)&/acro\t", "<acronym title=\"$1\">$2</acronym>");
+        
         rawdata = rawdata.replaceAll("\t", "(t)");
-
         return rawdata;
     }
 }

@@ -262,12 +262,12 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         }
         
         if(tabbedPane.getSelectedIndex() != findPages(channel)+1 && message.indexOf(dP.getUser()) == -1) {
-            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"red\">"));
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"blue\">"));
         }
         
         if(tabbedPane.getSelectedIndex() != findPages(channel)+1 && message.indexOf(dP.getUser()) != -1) {
-            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"green\">"));
-            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"red\">", "<font color=\"green\">"));
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"red\">"));
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"blue\">", "<font color=\"red\">"));
         }
         
         chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
@@ -298,12 +298,12 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
         }
         
         if(tabbedPane.getSelectedIndex() != findPages(channel)+1 && message.indexOf(dP.getUser()) == -1) {
-            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"red\">"));
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"blue\">"));
         }
         
         if(tabbedPane.getSelectedIndex() != findPages(channel)+1 && message.indexOf(dP.getUser()) != -1) {
-            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"green\">"));
-            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"red\">", "<font color=\"green\">"));
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"black\">", "<font color=\"red\">"));
+            tabbedPane.setTitleAt(findPages(channel)+1, tabbedPane.getTitleAt(findPages(channel)+1).replace("<font color=\"blue\">", "<font color=\"red\">"));
         }
         
         chatTerminal.setCaretPosition(chatTerminal.getDocument().getLength());
@@ -420,8 +420,8 @@ public class damnChatPage implements ActionListener, HyperlinkListener, KeyListe
     }
 
     public void stateChanged(ChangeEvent changeEvent) {
+        tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()).replace("<font color=\"blue\">", "<font color=\"black\">"));
         tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()).replace("<font color=\"red\">", "<font color=\"black\">"));
-        tabbedPane.setTitleAt(tabbedPane.getSelectedIndex(), tabbedPane.getTitleAt(tabbedPane.getSelectedIndex()).replace("<font color=\"green\">", "<font color=\"black\">"));
     }
     
     /**
