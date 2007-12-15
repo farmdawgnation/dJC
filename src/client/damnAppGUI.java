@@ -214,7 +214,7 @@ public class damnAppGUI extends JFrame {
                 dJ.showHelp(parts[1]);
             }
         } else if(parts[0].equalsIgnoreCase("/token")) {
-            TokenFetcher tf = new TokenFetcher("www.deviantart.com");
+            TokenFetcher tf = new TokenFetcher("www.deviantart.com", dJ);
 
             dJ.terminalEcho(0, tf.doTokenFetch(parts[1], parts[2]));
         } else if(parts[0].equalsIgnoreCase("/away")) {

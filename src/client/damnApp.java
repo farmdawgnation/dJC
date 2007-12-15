@@ -19,7 +19,7 @@ import javax.swing.*;
  */
 public class damnApp {
     private int connected=0;
-    private String version = "0.5";
+    private String version = "0.51";
     private damnProtocol protocol;
     private Thread socketThread;
     private Runnable commRunnable;

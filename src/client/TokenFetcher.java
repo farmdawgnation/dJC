@@ -48,7 +48,7 @@ public class TokenFetcher {
             writer.flush();
             
             while((message = reader.readLine()) != null) {
-                if(message.startsWith("Set-Cookie: ")) {
+                if(message.startsWith("Set-Cookie: userinfo=")) {
                     Pattern thePattern = Pattern.compile("Set-Cookie: userinfo=([A-Za-z%]+)");
                     Matcher theMatcher = thePattern.matcher(message);
                     message = theMatcher.replaceAll("$1");
